@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/DomParfitt/gecko/lexer"
+)
 
 func main() {
-	fmt.Printf("hello, gecko\n")
+	txt := "hello, gecko"
+	tokens := lexer.Tokenize(txt)
+	for _, token := range tokens {
+		fmt.Println(token)
+	}
+
 }
