@@ -24,3 +24,16 @@ func TestAddTransitionToNonExistantState(t *testing.T) {
 	f := New()
 	f.AddTransition(1, 2, []rune{'a'})
 }
+
+func TestAppend(t *testing.T) {
+	f := New()
+	f.AddState(true)
+	f.AddTransition(0, 1, []rune{'a'})
+	g := New()
+	g.AddState(true)
+	g.AddTransition(0, 1, []rune{'b'})
+	f.Append(g)
+	if !f.Execute("ab") {
+		t.Errorf("Error appending")
+	}
+}
