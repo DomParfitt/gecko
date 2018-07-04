@@ -4,63 +4,61 @@ import (
 	"fmt"
 )
 
-type TokenType int
+// Type of Token
+type Type int
 
+// Accepted Types of Token
 const (
-	Digit TokenType = iota
+	Digit Type = iota
 	Letter
 	OpenBrace
 	CloseBrace
 	Wildcard
+	Caret
+	Escape
 )
 
+//Token represents a lexed charcter. Contains the
+// type of the token as well as its raw value
 type Token struct {
-	Token TokenType
+	Token Type
 	Value rune
-}
-
-func (t TokenType) String() string {
-	switch t {
-	case Digit:
-		return "Digit"
-	case Letter:
-		return "Letter"
-	case OpenBrace:
-		return "OpenBrace"
-	case CloseBrace:
-		return "CloseBrace"
-	case Wildcard:
-		return "Wildcard"
-	default:
-		return "UnknownToken"
-	}
 }
 
 func (t Token) String() string {
 	return fmt.Sprintf("[%s]: %c", t.Token, t.Value)
 }
 
-func Match(ch rune) (TokenType, error) {
+// Match the provided character to a Type of Token.
+func Match(ch rune) (Type, bool) {
 	if ch >= '0' && ch <= '9' {
-		return Digit, nil
+		return Digit, true
 	}
 
 	if (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') {
-		return Letter, nil
+		return Letter, true
 	}
 
 	if ch == '(' || ch == '[' || ch == '{' {
-		return OpenBrace, nil
+		return OpenBrace, true
 	}
 
 	if ch == ')' || ch == ']' || ch == '}' {
-		return CloseBrace, nil
+		return CloseBrace, true
 	}
 
 	if ch == '*' || ch == '+' {
-		return Wildcard, nil
+		return Wildcard, true
 	}
 
-	return Digit, fmt.Errorf("No matching TokenType for character: %c", ch)
+	if ch == '^' {
+		return Caret, true
+	}
+
+	if ch == '\\' {
+		return Escape, true
+	}
+
+	return Digit, false
 
 }
