@@ -84,7 +84,27 @@ func (f *FiniteState) Append(other *FiniteState) {
 
 //Union the given automata with this one
 func (f *FiniteState) Union(other *FiniteState) {
+	offset := other.stateCount
 
+	//Copy transitions from other
+	for from, transition := range other.transitions {
+
+		if from != 0 {
+			from += offset
+		}
+
+		for ch, to := range transition {
+
+			if to == other.terminalState {
+				to = f.terminalState
+			} else {
+				to += offset
+			}
+
+			f.AddTransition(from, to, []rune{ch})
+		}
+	}
+	//TODO: Update stateCount
 }
 
 // Loop this automata on itself

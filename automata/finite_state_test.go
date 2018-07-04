@@ -37,3 +37,16 @@ func TestAppend(t *testing.T) {
 		t.Errorf("Error appending")
 	}
 }
+
+func TestUnion(t *testing.T) {
+	f := New()
+	f.AddState(true)
+	f.AddTransition(0, 1, []rune{'a'})
+	g := New()
+	g.AddState(true)
+	g.AddTransition(0, 1, []rune{'b'})
+	f.Union(g)
+	if !f.Execute("a") {
+		t.Errorf("Error unioning")
+	}
+}
