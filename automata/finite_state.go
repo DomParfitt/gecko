@@ -7,42 +7,52 @@ type Executer interface {
 
 // FiniteState struct
 type FiniteState struct {
-	currentState int
-	states       []bool
-	transitions  map[int]map[rune]int
+	stateCount    int
+	currentState  int
+	terminalState int
+	transitions   map[int]map[rune]int
 }
 
 // New creates a default instance of a FiniteState
 // struct and returns a pointer to it
 func New() *FiniteState {
 	return &FiniteState{
-		currentState: 0,
-		states:       []bool{false},
-		transitions:  make(map[int]map[rune]int),
+		stateCount:    1,
+		currentState:  0,
+		terminalState: 0,
+		transitions:   make(map[int]map[rune]int),
 	}
 }
 
 // AddState to the current set of states
 func (f *FiniteState) AddState(isTerminal bool) {
-	f.states = append(f.states, isTerminal)
+	if isTerminal {
+		f.terminalState = f.stateCount
+	}
+	f.stateCount++
 }
 
 // AddTransition from one state to another which consumes one of the
 // provided characters. If there already exists a transition from the
 // 'from' state using one of the provided charcters then it is overwritten.
 func (f *FiniteState) AddTransition(from, to int, chars []rune) {
-	// If we have a transition set from this state already
-	// the add/update
-	if transitionsFrom, ok := f.transitions[from]; ok {
-		for _, ch := range chars {
-			transitionsFrom[ch] = to
+
+	// Only add transitions to states which exist
+	if from < f.stateCount && to < f.stateCount {
+
+		// If we have a transition set from this state already
+		// the add/update
+		if transitionsFrom, ok := f.transitions[from]; ok {
+			for _, ch := range chars {
+				transitionsFrom[ch] = to
+			}
+		} else {
+			transitionsFrom := make(map[rune]int)
+			for _, ch := range chars {
+				transitionsFrom[ch] = to
+			}
+			f.transitions[from] = transitionsFrom
 		}
-	} else {
-		transitionsFrom := make(map[rune]int)
-		for _, ch := range chars {
-			transitionsFrom[ch] = to
-		}
-		f.transitions[from] = transitionsFrom
 	}
 }
 
@@ -56,10 +66,10 @@ func (f *FiniteState) Execute(input string) bool {
 			return false
 		}
 	}
-	return f.states[f.currentState]
+	return f.currentState == f.terminalState
 }
 
-// Consume a character and updates the state of the
+// Consume a character and update the state of the
 // automata as required.
 // Returns a bool indicating success or failure, where
 // failure indicates that the given character could not
