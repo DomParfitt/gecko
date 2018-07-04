@@ -29,20 +29,21 @@ func (f *FiniteState) AddState(isTerminal bool) {
 
 // AddTransition from one state to another which consumes one of the
 // provided characters. If there already exists a transition from the
-// 'from' state using one of the provided charcters then it is overwritten
+// 'from' state using one of the provided charcters then it is overwritten.
 func (f *FiniteState) AddTransition(from, to int, chars []rune) {
-	for _, ch := range chars {
-		f.transitions[from][ch] = to
+	// If we have a transition set from this state already
+	// the add/update
+	if transitionsFrom, ok := f.transitions[from]; ok {
+		for _, ch := range chars {
+			transitionsFrom[ch] = to
+		}
+	} else {
+		transitionsFrom := make(map[rune]int)
+		for _, ch := range chars {
+			transitionsFrom[ch] = to
+		}
+		f.transitions[from] = transitionsFrom
 	}
-	// if transition, ok := f.transitions[from]; ok {
-	// 	if validChars, ok := transition[to]; ok {
-	// 		for _, ch := range chars {
-	// 			validChars = append(validChars, ch)
-	// 		}
-	// 	} else {
-	// 		transition[to] = chars
-	// 	}
-	// }
 }
 
 // Execute the provided input string on the automata that
@@ -55,7 +56,7 @@ func (f *FiniteState) Execute(input string) bool {
 			return false
 		}
 	}
-	return false
+	return f.states[f.currentState]
 }
 
 // Consume a character and updates the state of the
@@ -75,18 +76,8 @@ func (f *FiniteState) transition(from int, ch rune) bool {
 
 	if to, ok := f.transitions[from][ch]; ok {
 		f.currentState = to
+		return true
 	}
 
 	return false
-
-	// if validChars, ok := f.transitions[from][to]; ok {
-	// 	for _, validChar := range validChars {
-	// 		if ch == validChar {
-	// 			f.currentState = to
-	// 			return true
-	// 		}
-	// 	}
-	// }
-
-	// return false
 }
