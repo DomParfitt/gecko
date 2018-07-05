@@ -1,6 +1,7 @@
 package automata
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -13,10 +14,31 @@ func TestExecute(t *testing.T) {
 
 func TestExecutePass(t *testing.T) {
 	f := New()
-	f.AddState(true)
 	f.AddTransition(0, 1, []rune{'a'})
+	f.SetTerminal(1)
 	if !f.Execute("a") {
 		t.Errorf("Expected success transitioning")
+	}
+}
+
+func TestAddTransitionOverwrite(t *testing.T) {
+	f := New()
+	f.AddTransition(0, 1, []rune{'a'})
+	if transition, ok := f.transitions[0]; ok {
+		if to, ok := transition['a']; !ok || to != 1 {
+			t.Errorf("Expected transition did not exist")
+		}
+	} else {
+		t.Errorf("Expected transition did not exist")
+	}
+
+	f.AddTransition(0, 2, []rune{'a'})
+	if transition, ok := f.transitions[0]; ok {
+		if to, ok := transition['a']; !ok || to != 2 {
+			t.Errorf("Expected transition did not exist")
+		}
+	} else {
+		t.Errorf("Expected transition did not exist")
 	}
 }
 
@@ -27,25 +49,34 @@ func TestAddTransitionToNonExistantState(t *testing.T) {
 
 func TestAppend(t *testing.T) {
 	f := New()
-	f.AddState(true)
 	f.AddTransition(0, 1, []rune{'a'})
+	f.AddTransition(1, 2, []rune{'b'})
+	f.AddTransition(2, 1, []rune{'x'})
+	f.SetTerminal(2)
+
 	g := New()
-	g.AddState(true)
-	g.AddTransition(0, 1, []rune{'b'})
+	g.AddTransition(0, 1, []rune{'c'})
+	g.SetTerminal(1)
+
 	f.Append(g)
-	if !f.Execute("ab") {
+	fmt.Println(f)
+
+	if !f.Execute("abc") {
 		t.Errorf("Error appending")
 	}
 }
 
 func TestUnion(t *testing.T) {
 	f := New()
-	f.AddState(true)
 	f.AddTransition(0, 1, []rune{'a'})
+	f.SetTerminal(1)
+
 	g := New()
-	g.AddState(true)
 	g.AddTransition(0, 1, []rune{'b'})
+	g.SetTerminal(1)
+
 	f.Union(g)
+
 	if !f.Execute("a") {
 		t.Errorf("Error unioning")
 	}
