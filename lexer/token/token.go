@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+//go:generate stringer -type=Type
+
 // Type of Token
 type Type int
 
@@ -16,6 +18,7 @@ const (
 	Wildcard
 	Caret
 	Escape
+	Pipe
 )
 
 //Token represents a lexed charcter. Contains the
@@ -57,6 +60,10 @@ func Match(ch rune) (Type, bool) {
 
 	if ch == '\\' {
 		return Escape, true
+	}
+
+	if ch == '|' {
+		return Pipe, true
 	}
 
 	return Digit, false
