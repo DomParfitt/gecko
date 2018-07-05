@@ -81,3 +81,19 @@ func TestUnion(t *testing.T) {
 		t.Errorf("Error unioning")
 	}
 }
+
+func TestLoop(t *testing.T) {
+	f := New()
+	f.AddTransition(0, 1, []rune{'a'})
+	f.AddTransition(1, 2, []rune{'b'})
+	f.AddTransition(2, 3, []rune{'c'})
+	f.AddTransition(3, 2, []rune{'d'})
+	f.SetTerminal(2)
+	f.Loop()
+
+	fmt.Println(f)
+
+	if !f.Execute("abcdabcd") {
+		t.Errorf("Error looping")
+	}
+}

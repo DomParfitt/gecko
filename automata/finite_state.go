@@ -65,7 +65,7 @@ func (f *FiniteState) AddTransition(from, to int, chars []rune) {
 // Append the given automata onto the end of this one
 func (f *FiniteState) Append(other *FiniteState) {
 	offset := f.nextState
-	f.nextState += other.nextState //- 1
+	f.nextState += other.nextState
 
 	//Update transitions to the original terminal state
 	for _, transition := range f.transitions {
@@ -98,7 +98,8 @@ func (f *FiniteState) Append(other *FiniteState) {
 
 //Union the given automata with this one
 func (f *FiniteState) Union(other *FiniteState) {
-	offset := other.nextState
+	offset := f.nextState
+	f.nextState += other.nextState
 
 	//Copy transitions from other
 	for from, transition := range other.transitions {
@@ -107,23 +108,41 @@ func (f *FiniteState) Union(other *FiniteState) {
 			from += offset
 		}
 
+		if from == other.terminalState {
+			from = f.terminalState
+		}
+
 		for ch, to := range transition {
 
 			if to == other.terminalState {
 				to = f.terminalState
-			} else {
+			} else if to != 0 {
 				to += offset
 			}
 
 			f.AddTransition(from, to, []rune{ch})
 		}
 	}
-	//TODO: Update stateCount
 }
 
 // Loop this automata on itself
 func (f *FiniteState) Loop() {
+	for from, transition := range f.transitions {
+		if from == f.terminalState {
+			for ch, to := range transition {
+				f.AddTransition(0, to, []rune{ch})
+			}
+			delete(f.transitions, from)
+		} else {
+			for ch, to := range transition {
+				if to == f.terminalState {
+					transition[ch] = 0
+				}
+			}
+		}
+	}
 
+	f.terminalState = 0
 }
 
 func (f *FiniteState) String() string {
