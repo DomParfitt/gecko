@@ -1,5 +1,9 @@
 package automata
 
+import (
+	"fmt"
+)
+
 // Executer interface
 type Executer interface {
 	execute(input string) bool
@@ -7,7 +11,7 @@ type Executer interface {
 
 // FiniteState struct
 type FiniteState struct {
-	stateCount    int
+	nextState     int
 	currentState  int
 	terminalState int
 	transitions   map[int]map[rune]int
@@ -17,19 +21,16 @@ type FiniteState struct {
 // struct and returns a pointer to it
 func New() *FiniteState {
 	return &FiniteState{
-		stateCount:    1,
+		nextState:     1,
 		currentState:  0,
 		terminalState: 0,
 		transitions:   make(map[int]map[rune]int),
 	}
 }
 
-// AddState to the current set of states
-func (f *FiniteState) AddState(isTerminal bool) {
-	if isTerminal {
-		f.terminalState = f.stateCount
-	}
-	f.stateCount++
+//SetTerminal state to provided
+func (f *FiniteState) SetTerminal(terminal int) {
+	f.terminalState = terminal
 }
 
 // AddTransition from one state to another which consumes one of the
@@ -37,35 +38,40 @@ func (f *FiniteState) AddState(isTerminal bool) {
 // 'from' state using one of the provided charcters then it is overwritten.
 func (f *FiniteState) AddTransition(from, to int, chars []rune) {
 
-	// Only add transitions to states which exist
-	if from < f.stateCount && to < f.stateCount {
+	//Update the next state indicator if necessary
+	if from > f.nextState {
+		f.nextState = from + 1
+	}
 
-		// If we have a transition set from this state already
-		// the add/update
-		if transitionsFrom, ok := f.transitions[from]; ok {
-			for _, ch := range chars {
-				transitionsFrom[ch] = to
-			}
-		} else {
-			transitionsFrom := make(map[rune]int)
-			for _, ch := range chars {
-				transitionsFrom[ch] = to
-			}
-			f.transitions[from] = transitionsFrom
+	if to > f.nextState {
+		f.nextState = to + 1
+	}
+
+	// If we have a transition set from this state already
+	// then add/update
+	if transitionsFrom, ok := f.transitions[from]; ok {
+		for _, ch := range chars {
+			transitionsFrom[ch] = to
 		}
+	} else {
+		transitionsFrom := make(map[rune]int)
+		for _, ch := range chars {
+			transitionsFrom[ch] = to
+		}
+		f.transitions[from] = transitionsFrom
 	}
 }
 
 // Append the given automata onto the end of this one
 func (f *FiniteState) Append(other *FiniteState) {
-	offset := other.stateCount
-	f.stateCount += other.stateCount
+	offset := f.nextState
+	f.nextState += other.nextState //- 1
 
-	//Update transitions to the terminal state
+	//Update transitions to the original terminal state
 	for _, transition := range f.transitions {
 		for ch, to := range transition {
 			if to == f.terminalState {
-				transition[ch]++
+				transition[ch] = offset
 			}
 		}
 	}
@@ -77,6 +83,14 @@ func (f *FiniteState) Append(other *FiniteState) {
 		}
 	}
 
+	//Update transitions from the original terminal state
+	if transition, ok := f.transitions[f.terminalState]; ok {
+		for ch, to := range transition {
+			f.AddTransition(other.terminalState+offset, to, []rune{ch})
+		}
+		delete(f.transitions, f.terminalState)
+	}
+
 	//Set new terminal
 	f.terminalState = other.terminalState + offset
 
@@ -84,7 +98,7 @@ func (f *FiniteState) Append(other *FiniteState) {
 
 //Union the given automata with this one
 func (f *FiniteState) Union(other *FiniteState) {
-	offset := other.stateCount
+	offset := other.nextState
 
 	//Copy transitions from other
 	for from, transition := range other.transitions {
@@ -110,6 +124,18 @@ func (f *FiniteState) Union(other *FiniteState) {
 // Loop this automata on itself
 func (f *FiniteState) Loop() {
 
+}
+
+func (f *FiniteState) String() string {
+	str := fmt.Sprintf("Terminal: %d\n", f.terminalState)
+	for from, transition := range f.transitions {
+		tran := ""
+		for ch, to := range transition {
+			tran += fmt.Sprintf("%c => %d;", ch, to)
+		}
+		str += fmt.Sprintf("%d: [%s]\n", from, tran)
+	}
+	return str
 }
 
 // Execute the provided input string on the automata that
