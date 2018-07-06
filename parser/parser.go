@@ -48,11 +48,23 @@ func (p *Parser) consume() (lexer.Token, bool) {
 	// If cursor is incremented beyond final token then we
 	// can't consume any further so return failure
 	if p.cursor == len(p.tokens) {
-		return lexer.Error(), false
+		return p.tokens[p.cursor-1], false
 	}
 
 	token := p.tokens[p.cursor]
 	p.cursor++
+
+	return token, true
+}
+
+//LookBack and get the previous token
+func (p *Parser) lookBack() (lexer.Token, bool) {
+
+	if p.cursor == 0 {
+		return p.tokens[p.cursor], false
+	}
+
+	token := p.tokens[p.cursor-1]
 
 	return token, true
 }
@@ -64,8 +76,46 @@ func (p *Parser) replace() {
 	}
 }
 
+// Literal is a digit or a letter
 func (p *Parser) literal(token lexer.Token) bool {
 	return token.Type == lexer.Digit || token.Type == lexer.Letter
+}
+
+// Expression is a literal or a literal followed by a wildcard
+func (p *Parser) expression() bool {
+	token, ok := p.consume()
+	if !ok {
+		token, ok := p.lookBack()
+		return ok && p.literal(token)
+	}
+
+	//Current token is literal, so look ahead
+	if p.literal(token) {
+		next, ok := p.consume()
+
+		//No next token but current is valid
+		if !ok {
+			return true
+		}
+
+		//Next token is a wildcard which is valid and indicates end
+		if token.Type == lexer.Wildcard {
+			return true
+		}
+
+		//Next is literal so recurse
+		if p.literal(next) {
+			return p.expression()
+		}
+	}
+
+	//Current token is wildcard, so look back
+	if token.Type == lexer.Wildcard {
+		previous, ok := p.lookBack()
+
+		return p.literal(previous)
+	}
+
 }
 
 func (p *Parser) concatenation() {
