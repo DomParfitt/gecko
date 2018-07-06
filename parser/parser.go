@@ -28,10 +28,13 @@ func New() *Parser {
 func (p *Parser) Parse(tokens []lexer.Token) (*tree.AbstractSyntax, error) {
 	p.cursor = 0
 	p.tokens = tokens
-	//TODO: Logic
 
 	for token, ok := p.consume(); ok; {
 		if p.literal(token) {
+			tree := tree.New(token)
+			tree.AddLeft(p.tree)
+			p.tree = tree
+		} else if p.operator(token) {
 
 		}
 	}
@@ -62,6 +65,23 @@ func (p *Parser) replace() {
 }
 
 func (p *Parser) literal(token lexer.Token) bool {
-
 	return token.Type == lexer.Digit || token.Type == lexer.Letter
+}
+
+func (p *Parser) concatenation() {
+	if token, ok := p.consume(); ok {
+		if p.literal(token) {
+			p.concatenation()
+		}
+	}
+}
+
+func (p *Parser) operator(token lexer.Token) bool {
+	return token.Type == lexer.Pipe
+}
+
+func (p *Parser) group() {
+	if token, ok := p.consume(); ok && token.Type == lexer.OpenBrace {
+		p.stack.Push(token)
+	}
 }
