@@ -28,6 +28,14 @@ type Token struct {
 	Value rune
 }
 
+//Error token
+func Error() Token {
+	return Token{
+		Type:  Digit,
+		Value: ' ',
+	}
+}
+
 func (t Token) String() string {
 	return fmt.Sprintf("[%s]: %c", t.Type, t.Value)
 }
