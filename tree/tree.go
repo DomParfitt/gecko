@@ -1,18 +1,16 @@
 package tree
 
-import (
-	"github.com/DomParfitt/gecko/lexer/token"
-)
+import "github.com/DomParfitt/gecko/lexer"
 
 //AbstractSyntax tree struct
 type AbstractSyntax struct {
-	token token.Token
+	token lexer.Token
 	left  *AbstractSyntax
 	right *AbstractSyntax
 }
 
 //New AbstractSyntax tree from a token
-func New(token token.Token) *AbstractSyntax {
+func New(token lexer.Token) *AbstractSyntax {
 	return &AbstractSyntax{
 		token: token,
 		left:  nil,

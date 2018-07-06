@@ -2,14 +2,14 @@ package parser
 
 import (
 	"github.com/DomParfitt/gecko/automata"
-	"github.com/DomParfitt/gecko/lexer/token"
+	"github.com/DomParfitt/gecko/lexer"
 	"github.com/DomParfitt/gecko/tree"
 )
 
 //Parser struct
 type Parser struct {
 	cursor int
-	tokens []token.Token
+	tokens []lexer.Token
 	tree   *tree.AbstractSyntax
 }
 
@@ -17,13 +17,13 @@ type Parser struct {
 func New() *Parser {
 	return &Parser{
 		cursor: 0,
-		tokens: []token.Token{},
+		tokens: []lexer.Token{},
 		tree:   nil,
 	}
 }
 
 // Parse a list of tokens into an executable
-func (p *Parser) Parse(tokens []token.Token) (*automata.FiniteState, error) {
+func (p *Parser) Parse(tokens []lexer.Token) (*automata.FiniteState, error) {
 	p.cursor = 0
 	p.tokens = tokens
 	automata := automata.New()
@@ -32,12 +32,12 @@ func (p *Parser) Parse(tokens []token.Token) (*automata.FiniteState, error) {
 }
 
 // Consume the next token in the list and increment the cursor
-func (p *Parser) consume() (token.Token, bool) {
+func (p *Parser) consume() (lexer.Token, bool) {
 
 	// If cursor is incremented beyond final token then we
 	// can't consume any further so return failure
 	if p.cursor == len(p.tokens) {
-		return token.Token{Token: token.Digit, Value: ' '}, false
+		return lexer.Token{Type: lexer.Digit, Value: ' '}, false
 	}
 
 	token := p.tokens[p.cursor]
@@ -53,7 +53,7 @@ func (p *Parser) replace() {
 	}
 }
 
-func literal() bool {
+func (p *Parser) literal(token lexer.Token) bool {
 
-	return false
+	return token.Type == lexer.Digit || token.Type == lexer.Letter
 }

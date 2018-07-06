@@ -1,17 +1,13 @@
 package lexer
 
-import (
-	"github.com/DomParfitt/gecko/lexer/token"
-)
-
 //Tokenize lexes a string into a list of
 // tokens
-func Tokenize(str string) []token.Token {
-	var tokens []token.Token
+func Tokenize(str string) []Token {
+	var tokens []Token
 	for _, ch := range str {
-		tokenType, ok := token.Match(ch)
+		tokenType, ok := Match(ch)
 		if ok {
-			tokens = append(tokens, token.Token{Token: tokenType, Value: ch})
+			tokens = append(tokens, Token{Type: tokenType, Value: ch})
 		}
 	}
 	return tokens

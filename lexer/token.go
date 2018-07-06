@@ -1,4 +1,4 @@
-package token
+package lexer
 
 import (
 	"fmt"
@@ -24,12 +24,12 @@ const (
 //Token represents a lexed charcter. Contains the
 // type of the token as well as its raw value
 type Token struct {
-	Token Type
+	Type  Type
 	Value rune
 }
 
 func (t Token) String() string {
-	return fmt.Sprintf("[%s]: %c", t.Token, t.Value)
+	return fmt.Sprintf("[%s]: %c", t.Type, t.Value)
 }
 
 // Match the provided character to a Type of Token.
