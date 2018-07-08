@@ -15,10 +15,11 @@ const (
 	Letter
 	OpenBrace
 	CloseBrace
-	Wildcard
+	Closure
 	Caret
 	Escape
 	Pipe
+	None
 )
 
 //Token represents a lexed charcter. Contains the
@@ -31,7 +32,7 @@ type Token struct {
 //Error token
 func Error() Token {
 	return Token{
-		Type:  Digit,
+		Type:  None,
 		Value: ' ',
 	}
 }
@@ -59,7 +60,7 @@ func Match(ch rune) (Type, bool) {
 	}
 
 	if ch == '*' || ch == '+' {
-		return Wildcard, true
+		return Closure, true
 	}
 
 	if ch == '^' {
@@ -74,6 +75,6 @@ func Match(ch rune) (Type, bool) {
 		return Pipe, true
 	}
 
-	return Digit, false
+	return None, false
 
 }
