@@ -29,13 +29,12 @@ func (p *Parser) Parse(tokens []lexer.Token) (*tree.AbstractSyntax, error) {
 	p.cursor = 0
 	p.tokens = tokens
 
-	for token, ok := p.consume(); ok; {
-		if p.literal(token) {
-			tree := tree.New(token)
-			tree.AddLeft(p.tree)
-			p.tree = tree
-		} else if p.operator(token) {
-
+	for p.cursor < len(tokens) {
+		reset := p.cursor
+		if p.expression() {
+			continue
+		} else {
+			p.cursor = reset
 		}
 	}
 
@@ -83,8 +82,13 @@ func (p *Parser) literal(token lexer.Token) bool {
 
 // Expression is a literal or a literal followed by a wildcard
 func (p *Parser) expression() bool {
+	//Get a token
 	token, ok := p.consume()
-	if !ok {
+
+	// If not ok then we're at the end of the tokens
+	// Wildcard must be final token
+	// Either way look at previous token should be literal
+	if !ok || token.Type == lexer.Closure {
 		token, ok := p.lookBack()
 		return ok && p.literal(token)
 	}
@@ -99,7 +103,7 @@ func (p *Parser) expression() bool {
 		}
 
 		//Next token is a wildcard which is valid and indicates end
-		if token.Type == lexer.Wildcard {
+		if token.Type == lexer.Closure {
 			return true
 		}
 
@@ -108,30 +112,10 @@ func (p *Parser) expression() bool {
 			return p.expression()
 		}
 	}
-
-	//Current token is wildcard, so look back
-	if token.Type == lexer.Wildcard {
-		previous, ok := p.lookBack()
-
-		return p.literal(previous)
-	}
-
+	return false
 }
 
-func (p *Parser) concatenation() {
-	if token, ok := p.consume(); ok {
-		if p.literal(token) {
-			p.concatenation()
-		}
-	}
-}
-
-func (p *Parser) operator(token lexer.Token) bool {
-	return token.Type == lexer.Pipe
-}
-
-func (p *Parser) group() {
-	if token, ok := p.consume(); ok && token.Type == lexer.OpenBrace {
-		p.stack.Push(token)
-	}
+func (p *Parser) term() bool {
+	// token, ok := p.consume()
+	return false
 }
