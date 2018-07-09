@@ -80,6 +80,61 @@ func (p *Parser) literal(token lexer.Token) bool {
 	return token.Type == lexer.Digit || token.Type == lexer.Letter
 }
 
+func (p *Parser) base() bool {
+	token, ok := p.consume()
+
+	if !ok {
+		return false
+	}
+
+	return token.Type == lexer.Digit || token.Type == lexer.Letter
+}
+
+func (p *Parser) closure() bool {
+
+	if !p.base() {
+		return false
+	}
+
+	token, ok := p.consume()
+
+	if !ok {
+		return false
+	}
+
+	return token.Type == lexer.Closure
+}
+
+func (p *Parser) basicExpr() bool {
+	return p.closure() || p.base()
+}
+
+func (p *Parser) concatenation() bool {
+	return p.simpleExpr() && p.basicExpr()
+}
+
+func (p *Parser) simpleExpr() bool {
+	return p.basicExpr() || p.concatenation()
+}
+
+func (p *Parser) union() bool {
+	if !p.regExpr() {
+		return false
+	}
+
+	token, ok := p.consume()
+
+	if !ok || token.Type != lexer.Pipe {
+		return false
+	}
+
+	return p.simpleExpr()
+}
+
+func (p *Parser) regExpr() bool {
+	return p.simpleExpr() || p.union()
+}
+
 // Expression is a literal or a literal followed by a wildcard
 func (p *Parser) expression() bool {
 	//Get a token
