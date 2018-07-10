@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/DomParfitt/gecko/lexer"
-	"github.com/DomParfitt/gecko/tree"
+	"github.com/DomParfitt/gecko/types/tree"
 )
 
 func TestNew(t *testing.T) {
@@ -111,17 +111,21 @@ func TestParser_replace(t *testing.T) {
 
 func TestParser_base(t *testing.T) {
 	tests := []struct {
-		name string
-		p    *Parser
-		want bool
+		name  string
+		p     *Parser
+		want  *Element
+		want1 bool
 	}{
 		// TODO: Add test cases.
-		{"One", parserFor("a"), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.base(); got != tt.want {
-				t.Errorf("Parser.base() = %v, want %v", got, tt.want)
+			got, got1 := tt.p.base()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.base() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.base() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -129,18 +133,43 @@ func TestParser_base(t *testing.T) {
 
 func TestParser_star(t *testing.T) {
 	tests := []struct {
-		name string
-		p    *Parser
-		want bool
+		name  string
+		p     *Parser
+		want  *Star
+		want1 bool
 	}{
 		// TODO: Add test cases.
-		{"One", parserFor("a*"), true},
-		{"Fail", parserFor("*a"), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.star(); got != tt.want {
-				t.Errorf("Parser.star() = %v, want %v", got, tt.want)
+			got, got1 := tt.p.star()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.star() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.star() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestParser_plus(t *testing.T) {
+	tests := []struct {
+		name  string
+		p     *Parser
+		want  *Plus
+		want1 bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := tt.p.plus()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.plus() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.plus() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -148,16 +177,21 @@ func TestParser_star(t *testing.T) {
 
 func TestParser_basicExpr(t *testing.T) {
 	tests := []struct {
-		name string
-		p    *Parser
-		want bool
+		name  string
+		p     *Parser
+		want  *BasicExpr
+		want1 bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.basicExpr(); got != tt.want {
-				t.Errorf("Parser.basicExpr() = %v, want %v", got, tt.want)
+			got, got1 := tt.p.basicExpr()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.basicExpr() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.basicExpr() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -165,17 +199,21 @@ func TestParser_basicExpr(t *testing.T) {
 
 func TestParser_concatenation(t *testing.T) {
 	tests := []struct {
-		name string
-		p    *Parser
-		want bool
+		name  string
+		p     *Parser
+		want  *Concatenation
+		want1 bool
 	}{
 		// TODO: Add test cases.
-		{"Simple", parserFor("abc"), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.concatenation(); got != tt.want {
-				t.Errorf("Parser.concatenation() = %v, want %v", got, tt.want)
+			got, got1 := tt.p.concatenation()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.concatenation() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.concatenation() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -183,16 +221,21 @@ func TestParser_concatenation(t *testing.T) {
 
 func TestParser_simpleExpr(t *testing.T) {
 	tests := []struct {
-		name string
-		p    *Parser
-		want bool
+		name  string
+		p     *Parser
+		want  *SimpleExpr
+		want1 bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.simpleExpr(); got != tt.want {
-				t.Errorf("Parser.simpleExpr() = %v, want %v", got, tt.want)
+			got, got1 := tt.p.simpleExpr()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.simpleExpr() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.simpleExpr() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -200,18 +243,21 @@ func TestParser_simpleExpr(t *testing.T) {
 
 func TestParser_union(t *testing.T) {
 	tests := []struct {
-		name string
-		p    *Parser
-		want bool
+		name  string
+		p     *Parser
+		want  *Union
+		want1 bool
 	}{
 		// TODO: Add test cases.
-		{"Simple", parserFor("a|b"), true},
-		{"Simple", parserFor("a|bc*|d"), true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.union(); got != tt.want {
-				t.Errorf("Parser.union() = %v, want %v", got, tt.want)
+			got, got1 := tt.p.union()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.union() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.union() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -219,45 +265,21 @@ func TestParser_union(t *testing.T) {
 
 func TestParser_regExpr(t *testing.T) {
 	tests := []struct {
-		name string
-		p    *Parser
-		want bool
+		name  string
+		p     *Parser
+		want  *RegExpr
+		want1 bool
 	}{
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.regExpr(); got != tt.want {
-				t.Errorf("Parser.regExpr() = %v, want %v", got, tt.want)
+			got, got1 := tt.p.regExpr()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.regExpr() got = %v, want %v", got, tt.want)
 			}
-		})
-	}
-}
-
-func parserFor(input string) *Parser {
-	tokens, err := lexer.Tokenize(input)
-	if err != nil {
-		return nil
-	}
-
-	parser := New()
-	parser.tokens = tokens
-
-	return parser
-}
-
-func TestParser_plus(t *testing.T) {
-	tests := []struct {
-		name string
-		p    *Parser
-		want bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.p.plus(); got != tt.want {
-				t.Errorf("Parser.plus() = %v, want %v", got, tt.want)
+			if got1 != tt.want1 {
+				t.Errorf("Parser.regExpr() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
