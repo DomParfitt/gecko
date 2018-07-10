@@ -1,21 +1,21 @@
 package parser
 
 type RegExpr struct {
-	union  *UnionExpr
+	union  *Union
 	simple *SimpleExpr
 }
 
-type UnionExpr struct {
+type Union struct {
 	regex  *RegExpr
 	simple *SimpleExpr
 }
 
 type SimpleExpr struct {
-	concatenation *ConcatenationExpr
+	concatenation *Concatenation
 	basic         *BasicExpr
 }
 
-type ConcatenationExpr struct {
+type Concatenation struct {
 	simple *SimpleExpr
 	basic  *BasicExpr
 }
