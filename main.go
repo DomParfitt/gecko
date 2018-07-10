@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/DomParfitt/gecko/compiler"
 	"github.com/DomParfitt/gecko/lexer"
 	"github.com/DomParfitt/gecko/parser"
 )
 
 func main() {
-	txt := "hello, gecko"
+	txt := "a|b"
 	tokens, err := lexer.Tokenize(txt)
 
 	if err != nil {
@@ -27,8 +26,8 @@ func main() {
 		return
 	}
 
-	exec := compiler.Compile(tree)
-	result := exec.Execute("hello")
+	exec := tree.Compile()
+	result := exec.Execute("a")
 	fmt.Printf("%t", result)
 
 }

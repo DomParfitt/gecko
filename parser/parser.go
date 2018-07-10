@@ -26,15 +26,17 @@ func New() *Parser {
 }
 
 // Parse a list of tokens into an executable
-func (p *Parser) Parse(tokens []lexer.Token) (*tree.AbstractSyntax, error) {
+func (p *Parser) Parse(tokens []lexer.Token) (*RegExpr, error) {
 	p.cursor = 0
 	p.tokens = tokens
 
-	if _, ok := p.regExpr(); !ok {
+	regExpr, ok := p.regExpr()
+
+	if !ok {
 		return nil, fmt.Errorf("the token stream could not be parsed")
 	}
 
-	return p.tree, nil
+	return regExpr, nil
 }
 
 // Consume the next token in the list and increment the cursor
