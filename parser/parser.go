@@ -83,7 +83,7 @@ func (p *Parser) base() (*Element, bool) {
 		return nil, false
 	}
 
-	return &Element{string(token.Value)}, true
+	return &Element{token.Value}, true
 }
 
 func (p *Parser) star() (*Star, bool) {

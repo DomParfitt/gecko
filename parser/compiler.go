@@ -10,7 +10,7 @@ type Compiler interface {
 
 func (e *Element) Compile() *automata.FiniteState {
 	a := automata.New()
-	// a.AddTransition(0, 1, []rune{rune(e.Value)})
+	a.AddTransition(0, 1, []rune{e.Value})
 	return a
 }
 

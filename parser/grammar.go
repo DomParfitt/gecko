@@ -43,5 +43,5 @@ type Plus struct {
 
 //Element ::= Character
 type Element struct {
-	Value string
+	Value rune
 }
