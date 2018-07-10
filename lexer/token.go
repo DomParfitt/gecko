@@ -11,11 +11,11 @@ type Type int
 
 // Accepted Types of Token
 const (
-	Digit Type = iota
-	Letter
+	Character Type = iota
 	OpenBrace
 	CloseBrace
-	Closure
+	Star
+	Plus
 	Caret
 	Escape
 	Pipe
@@ -42,39 +42,35 @@ func (t Token) String() string {
 }
 
 // Match the provided character to a Type of Token.
-func Match(ch rune) (Type, bool) {
-	if ch >= '0' && ch <= '9' {
-		return Digit, true
-	}
-
-	if (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') {
-		return Letter, true
-	}
-
+func Match(ch rune) Type {
 	if ch == '(' || ch == '[' || ch == '{' {
-		return OpenBrace, true
+		return OpenBrace
 	}
 
 	if ch == ')' || ch == ']' || ch == '}' {
-		return CloseBrace, true
+		return CloseBrace
 	}
 
-	if ch == '*' || ch == '+' {
-		return Closure, true
+	if ch == '*' {
+		return Star
+	}
+
+	if ch == '+' {
+		return Plus
 	}
 
 	if ch == '^' {
-		return Caret, true
+		return Caret
 	}
 
 	if ch == '\\' {
-		return Escape, true
+		return Escape
 	}
 
 	if ch == '|' {
-		return Pipe, true
+		return Pipe
 	}
 
-	return None, false
+	return Character
 
 }

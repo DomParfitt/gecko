@@ -3,8 +3,8 @@ package parser
 import (
 	"fmt"
 	"github.com/DomParfitt/gecko/lexer"
-	"github.com/DomParfitt/gecko/stack"
-	"github.com/DomParfitt/gecko/tree"
+	"github.com/DomParfitt/gecko/types/stack"
+	"github.com/DomParfitt/gecko/types/tree"
 )
 
 //Parser struct
@@ -78,7 +78,7 @@ func (p *Parser) base() bool {
 		return false
 	}
 
-	if !(token.Type == lexer.Digit || token.Type == lexer.Letter) {
+	if token.Type != lexer.Character {
 		p.replace()
 		return false
 	}
@@ -86,7 +86,7 @@ func (p *Parser) base() bool {
 	return true
 }
 
-func (p *Parser) closure() bool {
+func (p *Parser) star() bool {
 
 	if !p.base() {
 		return false
@@ -99,7 +99,29 @@ func (p *Parser) closure() bool {
 		return false
 	}
 
-	if token.Type != lexer.Closure {
+	if token.Type != lexer.Star {
+		p.replace()
+		p.replace()
+		return false
+	}
+
+	return true
+}
+
+func (p *Parser) plus() bool {
+
+	if !p.base() {
+		return false
+	}
+
+	token, ok := p.consume()
+
+	if !ok {
+		p.replace()
+		return false
+	}
+
+	if token.Type != lexer.Plus {
 		p.replace()
 		p.replace()
 		return false
@@ -109,7 +131,7 @@ func (p *Parser) closure() bool {
 }
 
 func (p *Parser) basicExpr() bool {
-	return p.closure() || p.base()
+	return p.star() || p.plus() || p.base()
 }
 
 func (p *Parser) concatenation() bool {
