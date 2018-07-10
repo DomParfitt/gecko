@@ -13,6 +13,7 @@ type Parser struct {
 	tokens []lexer.Token
 	stack  *stack.Stack
 	tree   *tree.AbstractSyntax
+	expr   *RegExpr
 }
 
 //New parser
@@ -22,6 +23,7 @@ func New() *Parser {
 		tokens: []lexer.Token{},
 		stack:  stack.New(),
 		tree:   nil,
+		expr:   nil,
 	}
 }
 
