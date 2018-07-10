@@ -212,14 +212,14 @@ func (p *Parser) union() (*Union, bool) {
 }
 
 func (p *Parser) regExpr() (*RegExpr, bool) {
-	simple, ok := p.simpleExpr()
-	if ok {
-		return &RegExpr{simple: simple}, true
-	}
-
 	union, ok := p.union()
 	if ok {
 		return &RegExpr{union: union}, true
+	}
+
+	simple, ok := p.simpleExpr()
+	if ok {
+		return &RegExpr{simple: simple}, true
 	}
 
 	return nil, false
