@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/DomParfitt/gecko/lexer"
 	"github.com/DomParfitt/gecko/stack"
 	"github.com/DomParfitt/gecko/tree"
@@ -29,13 +30,8 @@ func (p *Parser) Parse(tokens []lexer.Token) (*tree.AbstractSyntax, error) {
 	p.cursor = 0
 	p.tokens = tokens
 
-	for p.cursor < len(tokens) {
-		reset := p.cursor
-		if p.expression() {
-			continue
-		} else {
-			p.cursor = reset
-		}
+	if !p.regExpr() {
+		return nil, fmt.Errorf("the token stream could not be parsed")
 	}
 
 	return p.tree, nil
@@ -75,11 +71,6 @@ func (p *Parser) replace() {
 	}
 }
 
-// Literal is a digit or a letter
-func (p *Parser) literal(token lexer.Token) bool {
-	return token.Type == lexer.Digit || token.Type == lexer.Letter
-}
-
 func (p *Parser) base() bool {
 	token, ok := p.consume()
 
@@ -87,7 +78,12 @@ func (p *Parser) base() bool {
 		return false
 	}
 
-	return token.Type == lexer.Digit || token.Type == lexer.Letter
+	if !(token.Type == lexer.Digit || token.Type == lexer.Letter) {
+		p.replace()
+		return false
+	}
+
+	return true
 }
 
 func (p *Parser) closure() bool {
@@ -99,10 +95,17 @@ func (p *Parser) closure() bool {
 	token, ok := p.consume()
 
 	if !ok {
+		p.replace()
 		return false
 	}
 
-	return token.Type == lexer.Closure
+	if token.Type != lexer.Closure {
+		p.replace()
+		p.replace()
+		return false
+	}
+
+	return true
 }
 
 func (p *Parser) basicExpr() bool {
@@ -110,7 +113,7 @@ func (p *Parser) basicExpr() bool {
 }
 
 func (p *Parser) concatenation() bool {
-	return p.simpleExpr() && p.basicExpr()
+	return p.basicExpr() && p.simpleExpr()
 }
 
 func (p *Parser) simpleExpr() bool {
@@ -118,59 +121,26 @@ func (p *Parser) simpleExpr() bool {
 }
 
 func (p *Parser) union() bool {
-	if !p.regExpr() {
+	if !p.simpleExpr() {
 		return false
 	}
 
 	token, ok := p.consume()
 
-	if !ok || token.Type != lexer.Pipe {
+	if !ok {
+		p.replace()
 		return false
 	}
 
-	return p.simpleExpr()
+	if token.Type != lexer.Pipe {
+		p.replace()
+		p.replace()
+		return false
+	}
+
+	return p.regExpr()
 }
 
 func (p *Parser) regExpr() bool {
 	return p.simpleExpr() || p.union()
-}
-
-// Expression is a literal or a literal followed by a wildcard
-func (p *Parser) expression() bool {
-	//Get a token
-	token, ok := p.consume()
-
-	// If not ok then we're at the end of the tokens
-	// Wildcard must be final token
-	// Either way look at previous token should be literal
-	if !ok || token.Type == lexer.Closure {
-		token, ok := p.lookBack()
-		return ok && p.literal(token)
-	}
-
-	//Current token is literal, so look ahead
-	if p.literal(token) {
-		next, ok := p.consume()
-
-		//No next token but current is valid
-		if !ok {
-			return true
-		}
-
-		//Next token is a wildcard which is valid and indicates end
-		if token.Type == lexer.Closure {
-			return true
-		}
-
-		//Next is literal so recurse
-		if p.literal(next) {
-			return p.expression()
-		}
-	}
-	return false
-}
-
-func (p *Parser) term() bool {
-	// token, ok := p.consume()
-	return false
 }
