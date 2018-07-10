@@ -13,7 +13,6 @@ type Parser struct {
 	tokens []lexer.Token
 	stack  *stack.Stack
 	tree   *tree.AbstractSyntax
-	expr   *RegExpr
 }
 
 //New parser
@@ -23,7 +22,6 @@ func New() *Parser {
 		tokens: []lexer.Token{},
 		stack:  stack.New(),
 		tree:   nil,
-		expr:   nil,
 	}
 }
 
@@ -32,7 +30,7 @@ func (p *Parser) Parse(tokens []lexer.Token) (*tree.AbstractSyntax, error) {
 	p.cursor = 0
 	p.tokens = tokens
 
-	if !p.regExpr() {
+	if _, ok := p.regExpr(); !ok {
 		return nil, fmt.Errorf("the token stream could not be parsed")
 	}
 
@@ -73,98 +71,155 @@ func (p *Parser) replace() {
 	}
 }
 
-func (p *Parser) base() bool {
+func (p *Parser) base() (*Element, bool) {
 	token, ok := p.consume()
 
 	if !ok {
-		return false
+		return nil, false
 	}
 
 	if token.Type != lexer.Character {
 		p.replace()
-		return false
+		return nil, false
 	}
 
-	return true
+	return &Element{string(token.Value)}, true
 }
 
-func (p *Parser) star() bool {
+func (p *Parser) star() (*Star, bool) {
 
-	if !p.base() {
-		return false
+	base, ok := p.base()
+	if !ok {
+		return nil, false
 	}
 
 	token, ok := p.consume()
 
 	if !ok {
 		p.replace()
-		return false
+		return nil, false
 	}
 
 	if token.Type != lexer.Star {
 		p.replace()
 		p.replace()
-		return false
+		return nil, false
 	}
 
-	return true
+	return &Star{base}, true
 }
 
-func (p *Parser) plus() bool {
+func (p *Parser) plus() (*Plus, bool) {
 
-	if !p.base() {
-		return false
+	base, ok := p.base()
+	if !ok {
+		return nil, false
 	}
 
 	token, ok := p.consume()
 
 	if !ok {
 		p.replace()
-		return false
+		return nil, false
 	}
 
 	if token.Type != lexer.Plus {
 		p.replace()
 		p.replace()
-		return false
+		return nil, false
 	}
 
-	return true
+	return &Plus{base}, true
 }
 
-func (p *Parser) basicExpr() bool {
-	return p.star() || p.plus() || p.base()
+func (p *Parser) basicExpr() (*BasicExpr, bool) {
+	star, ok := p.star()
+	if ok {
+		return &BasicExpr{star: star}, true
+	}
+
+	plus, ok := p.plus()
+	if ok {
+		return &BasicExpr{plus: plus}, true
+	}
+
+	base, ok := p.base()
+	if ok {
+		return &BasicExpr{element: base}, true
+	}
+
+	return nil, false
+	// return p.star() || p.plus() || p.base()
 }
 
-func (p *Parser) concatenation() bool {
-	return p.basicExpr() && p.simpleExpr()
+func (p *Parser) concatenation() (*Concatenation, bool) {
+	basic, ok := p.basicExpr()
+	if ok {
+		simple, ok := p.simpleExpr()
+		if ok {
+			return &Concatenation{simple, basic}, true
+		}
+	}
+	return nil, false
 }
 
-func (p *Parser) simpleExpr() bool {
-	return p.basicExpr() || p.concatenation()
+func (p *Parser) simpleExpr() (*SimpleExpr, bool) {
+	basic, ok := p.basicExpr()
+	if ok {
+		return &SimpleExpr{basic: basic}, true
+	}
+
+	concatenation, ok := p.concatenation()
+	if ok {
+		return &SimpleExpr{concatenation: concatenation}, true
+	}
+
+	return nil, false
+	// return p.basicExpr() || p.concatenation()
 }
 
-func (p *Parser) union() bool {
-	if !p.simpleExpr() {
-		return false
+func (p *Parser) union() (*Union, bool) {
+
+	simple, ok := p.simpleExpr()
+	if !ok {
+		return nil, false
 	}
 
 	token, ok := p.consume()
 
 	if !ok {
 		p.replace()
-		return false
+		return nil, false
 	}
 
 	if token.Type != lexer.Pipe {
 		p.replace()
 		p.replace()
-		return false
+		return nil, false
 	}
 
-	return p.regExpr()
+	regex, ok := p.regExpr()
+
+	if !ok {
+		return nil, false
+	}
+
+	return &Union{regex, simple}, true
+
+	// return p.regExpr()
 }
 
-func (p *Parser) regExpr() bool {
-	return p.simpleExpr() || p.union()
+func (p *Parser) regExpr() (*RegExpr, bool) {
+	simple, ok := p.simpleExpr()
+	if ok {
+		return &RegExpr{simple: simple}, true
+	}
+
+	union, ok := p.union()
+	if ok {
+		return &RegExpr{union: union}, true
+	}
+
+	return nil, false
+	// return p.simpleExpr() || p.union()
 }
