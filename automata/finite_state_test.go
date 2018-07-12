@@ -80,6 +80,11 @@ func TestUnion(t *testing.T) {
 	if !f.Execute("a") {
 		t.Errorf("Error unioning")
 	}
+
+	if !f.Execute("b") {
+		t.Errorf("Error unioning")
+	}
+
 }
 
 func TestLoop(t *testing.T) {
