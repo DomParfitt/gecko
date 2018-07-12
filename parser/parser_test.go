@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/DomParfitt/gecko/lexer"
-	"github.com/DomParfitt/gecko/types/tree"
+	"github.com/DomParfitt/gecko/types/stack"
 )
 
 func TestNew(t *testing.T) {
@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 		name string
 		want *Parser
 	}{
-		// TODO: Add test cases.
+		{"New", &Parser{0, []lexer.Token{}, stack.New(), nil}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -33,7 +33,7 @@ func TestParser_Parse(t *testing.T) {
 		name    string
 		p       *Parser
 		args    args
-		want    *tree.AbstractSyntax
+		want    *RegExpr
 		wantErr bool
 	}{
 		// TODO: Add test cases.
@@ -106,6 +106,23 @@ func TestParser_replace(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.p.replace()
+		})
+	}
+}
+
+func TestParser_reset(t *testing.T) {
+	tests := []struct {
+		name string
+		p    *Parser
+		want func()
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.p.reset(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.reset() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
