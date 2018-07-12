@@ -4,16 +4,20 @@ import (
 	"github.com/DomParfitt/gecko/automata"
 )
 
+//Compiler interface for compiling something into a Finite State Machine
 type Compiler interface {
 	Compile() *automata.FiniteState
 }
 
+//Compile an Element into a Finite State Machine
 func (e *Element) Compile() *automata.FiniteState {
 	a := automata.New()
 	a.AddTransition(0, 1, []rune{e.Value})
+	a.SetTerminal(1)
 	return a
 }
 
+//Compile a Plus into a Finite State Machine
 func (p *Plus) Compile() *automata.FiniteState {
 	a := p.element.Compile()
 	b := p.element.Compile()
@@ -22,12 +26,14 @@ func (p *Plus) Compile() *automata.FiniteState {
 	return a
 }
 
+//Compile a Star into a Finite State Machine
 func (s *Star) Compile() *automata.FiniteState {
 	a := s.element.Compile()
 	a.Loop()
 	return a
 }
 
+//Compile a BasicExpr into a Finite State Machine
 func (b *BasicExpr) Compile() *automata.FiniteState {
 	if b.star != nil {
 		return b.star.Compile()
@@ -44,6 +50,7 @@ func (b *BasicExpr) Compile() *automata.FiniteState {
 	panic("invalid")
 }
 
+//Compile a Concatenation into a Finite State Machine
 func (c *Concatenation) Compile() *automata.FiniteState {
 	a := c.simple.Compile()
 	b := c.basic.Compile()
@@ -51,6 +58,7 @@ func (c *Concatenation) Compile() *automata.FiniteState {
 	return a
 }
 
+//Compile a SimpleExpr into a Finite State Machine
 func (s *SimpleExpr) Compile() *automata.FiniteState {
 	if s.concatenation != nil {
 		return s.concatenation.Compile()
@@ -63,6 +71,7 @@ func (s *SimpleExpr) Compile() *automata.FiniteState {
 	panic("invalid")
 }
 
+//Compile a Union into a Finite State Machine
 func (u *Union) Compile() *automata.FiniteState {
 	a := u.regex.Compile()
 	b := u.simple.Compile()
@@ -70,6 +79,7 @@ func (u *Union) Compile() *automata.FiniteState {
 	return a
 }
 
+//Compile a RegExpr into a Finite State Machine
 func (r *RegExpr) Compile() *automata.FiniteState {
 	if r.union != nil {
 		return r.union.Compile()
