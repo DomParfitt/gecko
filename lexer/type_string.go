@@ -4,9 +4,9 @@ package lexer
 
 import "strconv"
 
-const _Type_name = "DigitLetterOpenBraceCloseBraceWildcardCaretEscapePipe"
+const _Type_name = "CharacterOpenBraceCloseBraceStarPlusCaretEscapePipeNone"
 
-var _Type_index = [...]uint8{0, 5, 11, 20, 30, 38, 43, 49, 53}
+var _Type_index = [...]uint8{0, 9, 18, 28, 32, 36, 41, 47, 51, 55}
 
 func (i Type) String() string {
 	if i < 0 || i >= Type(len(_Type_index)-1) {
