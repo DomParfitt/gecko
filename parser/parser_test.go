@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -283,4 +284,33 @@ func TestParser_regExpr(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test(t *testing.T) {
+	txt := "a|b"
+	tokens, err := lexer.Tokenize(txt)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, token := range tokens {
+		fmt.Println(token)
+	}
+	parser := New()
+	tree, err := parser.Parse(tokens)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	exec := tree.Compile()
+	fmt.Println(exec)
+	result := exec.Execute("a")
+	if !result {
+		t.Errorf("failed compiling and executing")
+	}
+	fmt.Printf("%t", result)
 }
