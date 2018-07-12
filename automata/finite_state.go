@@ -39,11 +39,11 @@ func (f *FiniteState) SetTerminal(terminal int) {
 func (f *FiniteState) AddTransition(from, to int, chars []rune) {
 
 	//Update the next state indicator if necessary
-	if from > f.nextState {
+	if from >= f.nextState {
 		f.nextState = from + 1
 	}
 
-	if to > f.nextState {
+	if to >= f.nextState {
 		f.nextState = to + 1
 	}
 
