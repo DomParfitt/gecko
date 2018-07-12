@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"github.com/DomParfitt/gecko/lexer"
 	"github.com/DomParfitt/gecko/parser"
+	"os"
 )
 
 func main() {
-	txt := "a|b"
-	tokens := lexer.Tokenize(txt)
+	args := os.Args[1:]
+	pattern := args[0]
+	input := args[1]
+	tokens := lexer.Tokenize(pattern)
 
 	for _, token := range tokens {
 		fmt.Println(token)
@@ -23,7 +26,7 @@ func main() {
 	}
 
 	exec := tree.Compile()
-	result := exec.Execute("a")
+	result := exec.Execute(input)
 	fmt.Printf("%t", result)
 
 }
