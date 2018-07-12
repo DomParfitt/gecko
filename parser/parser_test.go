@@ -288,12 +288,7 @@ func TestParser_regExpr(t *testing.T) {
 
 func Test(t *testing.T) {
 	txt := "a|b"
-	tokens, err := lexer.Tokenize(txt)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	tokens := lexer.Tokenize(txt)
 
 	for _, token := range tokens {
 		fmt.Println(token)
@@ -313,4 +308,11 @@ func Test(t *testing.T) {
 		t.Errorf("failed compiling and executing")
 	}
 	fmt.Printf("%t", result)
+}
+
+func parserFrom(input string) *Parser {
+	tokens := lexer.Tokenize(input)
+	p := New()
+	p.tokens = tokens
+	return p
 }

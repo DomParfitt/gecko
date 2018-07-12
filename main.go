@@ -8,16 +8,12 @@ import (
 
 func main() {
 	txt := "a|b"
-	tokens, err := lexer.Tokenize(txt)
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	tokens := lexer.Tokenize(txt)
 
 	for _, token := range tokens {
 		fmt.Println(token)
 	}
+
 	parser := parser.New()
 	tree, err := parser.Parse(tokens)
 
