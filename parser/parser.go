@@ -92,7 +92,6 @@ func (p *Parser) base() (*Element, bool) {
 	}
 
 	if token.Type != lexer.Character {
-		// p.replace()
 		reset()
 		return nil, false
 	}
@@ -112,14 +111,11 @@ func (p *Parser) star() (*Star, bool) {
 	token, ok := p.consume()
 
 	if !ok {
-		// p.replace()
 		reset()
 		return nil, false
 	}
 
 	if token.Type != lexer.Star {
-		// p.replace()
-		// p.replace()
 		reset()
 		return nil, false
 	}
@@ -139,14 +135,11 @@ func (p *Parser) plus() (*Plus, bool) {
 	token, ok := p.consume()
 
 	if !ok {
-		// p.replace()
 		reset()
 		return nil, false
 	}
 
 	if token.Type != lexer.Plus {
-		// p.replace()
-		// p.replace()
 		reset()
 		return nil, false
 	}
@@ -174,7 +167,6 @@ func (p *Parser) basicExpr() (*BasicExpr, bool) {
 	}
 
 	return nil, false
-	// return p.star() || p.plus() || p.base()
 }
 
 func (p *Parser) concatenation() (*Concatenation, bool) {
@@ -213,7 +205,6 @@ func (p *Parser) simpleExpr() (*SimpleExpr, bool) {
 
 	reset()
 	return nil, false
-	// return p.basicExpr() || p.concatenation()
 }
 
 func (p *Parser) union() (*Union, bool) {
@@ -229,14 +220,11 @@ func (p *Parser) union() (*Union, bool) {
 	token, ok := p.consume()
 
 	if !ok {
-		// p.replace()
 		reset()
 		return nil, false
 	}
 
 	if token.Type != lexer.Pipe {
-		// p.replace()
-		// p.replace()
 		reset()
 		return nil, false
 	}
@@ -250,7 +238,6 @@ func (p *Parser) union() (*Union, bool) {
 
 	return &Union{regex, simple}, true
 
-	// return p.regExpr()
 }
 
 func (p *Parser) regExpr() (*RegExpr, bool) {
@@ -271,5 +258,4 @@ func (p *Parser) regExpr() (*RegExpr, bool) {
 
 	reset()
 	return nil, false
-	// return p.simpleExpr() || p.union()
 }
