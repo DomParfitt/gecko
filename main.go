@@ -5,28 +5,30 @@ import (
 	"github.com/DomParfitt/gecko/lexer"
 	"github.com/DomParfitt/gecko/parser"
 	"os"
+	"time"
 )
 
 func main() {
+	start := time.Now()
 	args := os.Args[1:]
 	pattern := args[0]
 	input := args[1]
 	tokens := lexer.Tokenize(pattern)
 
-	for _, token := range tokens {
-		fmt.Println(token)
-	}
-
 	parser := parser.New()
-	tree, err := parser.Parse(tokens)
+	regex, err := parser.Parse(tokens)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	exec := tree.Compile()
+	exec := regex.Compile()
+
 	result := exec.Execute(input)
-	fmt.Printf("%t", result)
+	// time.Sleep(5 * time.Second)
+	fmt.Printf("%t\n", result)
+	end := time.Now()
+	fmt.Printf("Compiled the pattern %s in %f seconds\n", pattern, end.Sub(start).Seconds())
 
 }
