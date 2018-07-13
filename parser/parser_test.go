@@ -13,7 +13,7 @@ func TestNew(t *testing.T) {
 		name string
 		want *Parser
 	}{
-		{"New", parserFrom("")},
+		{"New", &Parser{0, []lexer.Token{}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
