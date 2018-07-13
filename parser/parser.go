@@ -39,6 +39,9 @@ func (p *Parser) consume() (lexer.Token, bool) {
 	// If cursor is incremented beyond final token then we
 	// can't consume any further so return failure
 	if p.cursor == len(p.tokens) {
+		if len(p.tokens) == 0 {
+			return lexer.Token{Type: lexer.Character, Value: ' '}, false
+		}
 		return p.tokens[p.cursor-1], false
 	}
 
