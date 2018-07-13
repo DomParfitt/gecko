@@ -97,7 +97,10 @@ func TestParser_base(t *testing.T) {
 		want  *Element
 		want1 bool
 	}{
-		// TODO: Add test cases.
+		{"Letter", parserFrom("a"), &Element{'a'}, true},
+		{"Digit", parserFrom("1"), &Element{'1'}, true},
+		{"Invalid Token", parserFrom("*"), nil, false},
+		{"No Tokens", parserFrom(""), nil, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
