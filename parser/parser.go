@@ -3,16 +3,12 @@ package parser
 import (
 	"fmt"
 	"github.com/DomParfitt/gecko/lexer"
-	"github.com/DomParfitt/gecko/types/stack"
-	"github.com/DomParfitt/gecko/types/tree"
 )
 
 //Parser struct
 type Parser struct {
 	cursor int
 	tokens []lexer.Token
-	stack  *stack.Stack
-	tree   *tree.AbstractSyntax
 }
 
 //New parser
@@ -20,8 +16,6 @@ func New() *Parser {
 	return &Parser{
 		cursor: 0,
 		tokens: []lexer.Token{},
-		stack:  stack.New(),
-		tree:   nil,
 	}
 }
 
@@ -52,25 +46,6 @@ func (p *Parser) consume() (lexer.Token, bool) {
 	p.cursor++
 
 	return token, true
-}
-
-//LookBack and get the previous token
-func (p *Parser) lookBack() (lexer.Token, bool) {
-
-	if p.cursor == 0 {
-		return p.tokens[p.cursor], false
-	}
-
-	token := p.tokens[p.cursor-1]
-
-	return token, true
-}
-
-// Replace the previous token, decrementing the cursor
-func (p *Parser) replace() {
-	if p.cursor > 0 {
-		p.cursor--
-	}
 }
 
 //Reset the cursor to a given value

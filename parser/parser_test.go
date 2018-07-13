@@ -74,42 +74,6 @@ func TestParser_consume(t *testing.T) {
 	}
 }
 
-func TestParser_lookBack(t *testing.T) {
-	tests := []struct {
-		name  string
-		p     *Parser
-		want  lexer.Token
-		want1 bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := tt.p.lookBack()
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Parser.lookBack() got = %v, want %v", got, tt.want)
-			}
-			if got1 != tt.want1 {
-				t.Errorf("Parser.lookBack() got1 = %v, want %v", got1, tt.want1)
-			}
-		})
-	}
-}
-
-func TestParser_replace(t *testing.T) {
-	tests := []struct {
-		name string
-		p    *Parser
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tt.p.replace()
-		})
-	}
-}
-
 func TestParser_reset(t *testing.T) {
 	tests := []struct {
 		name string
