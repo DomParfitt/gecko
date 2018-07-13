@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/DomParfitt/gecko/lexer"
-	"github.com/DomParfitt/gecko/types/stack"
 )
 
 func TestNew(t *testing.T) {
@@ -14,7 +13,7 @@ func TestNew(t *testing.T) {
 		name string
 		want *Parser
 	}{
-		{"New", &Parser{0, []lexer.Token{}, stack.New(), nil}},
+		{"New", parserFrom("")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
