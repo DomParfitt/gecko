@@ -52,8 +52,8 @@ func (b *BasicExpr) Compile() *automata.FiniteState {
 
 //Compile a Concatenation into a Finite State Machine
 func (c *Concatenation) Compile() *automata.FiniteState {
-	a := c.simple.Compile()
-	b := c.basic.Compile()
+	a := c.basic.Compile()
+	b := c.simple.Compile()
 	a.Append(b)
 	return a
 }

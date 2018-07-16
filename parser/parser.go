@@ -170,15 +170,15 @@ func (p *Parser) concatenation() (*Concatenation, bool) {
 
 func (p *Parser) simpleExpr() (*SimpleExpr, bool) {
 	reset := p.reset()
-	basic, ok := p.basicExpr()
-	if ok {
-		return &SimpleExpr{basic: basic}, true
-	}
-
-	reset()
 	concatenation, ok := p.concatenation()
 	if ok {
 		return &SimpleExpr{concatenation: concatenation}, true
+	}
+
+	reset()
+	basic, ok := p.basicExpr()
+	if ok {
+		return &SimpleExpr{basic: basic}, true
 	}
 
 	reset()
