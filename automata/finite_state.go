@@ -150,9 +150,9 @@ func (f *FiniteState) String() string {
 	for from, transition := range f.transitions {
 		tran := ""
 		for ch, to := range transition {
-			tran += fmt.Sprintf("%c => %d;", ch, to)
+			tran += fmt.Sprintf("\n    %c => %d", ch, to)
 		}
-		str += fmt.Sprintf("%d: [%s]\n", from, tran)
+		str += fmt.Sprintf("%d: %s\n", from, tran)
 	}
 	return str
 }
