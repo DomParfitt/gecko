@@ -38,6 +38,11 @@ func Create(chars []rune) *FiniteState {
 }
 
 func (f *FiniteState) addTerminal(terminal int) {
+	for _, val := range f.terminalStates {
+		if val == terminal {
+			return
+		}
+	}
 	f.terminalStates = append(f.terminalStates, terminal)
 }
 
