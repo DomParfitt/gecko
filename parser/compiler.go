@@ -71,8 +71,8 @@ func (s *SimpleExpr) Compile() *automata.FiniteState {
 
 //Compile a Union into a Finite State Machine
 func (u *Union) Compile() *automata.FiniteState {
-	a := u.regex.Compile()
-	b := u.simple.Compile()
+	a := u.simple.Compile()
+	b := u.regex.Compile()
 	a.Union(b)
 	return a
 }
