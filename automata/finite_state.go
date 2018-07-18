@@ -81,36 +81,18 @@ func (f *FiniteState) Append(other *FiniteState) {
 	offset := f.nextState
 	f.nextState += other.nextState
 
-	//Update transitions to the original terminal states
-	for _, transition := range f.transitions {
-		for ch, to := range transition {
-			if f.isTerminal(to) {
-				transition[ch] = offset
-			}
-		}
-	}
-
-	//Copy transitions from other
+	//Update transitions from the other initial
 	for from, transition := range other.transitions {
-		for ch, to := range transition {
-			f.AddTransition(from+offset, to+offset, []rune{ch})
-		}
-	}
-
-	//Update transitions from the original terminal state
-	for _, terminal := range f.terminalStates {
-
-		if transition, ok := f.transitions[terminal]; ok {
-			for ch, to := range transition {
-				for _, otherTerm := range other.terminalStates {
-					f.AddTransition(otherTerm+offset, to, []rune{ch})
+		if from == 0 {
+			for _, terminal := range f.terminalStates {
+				for ch, to := range transition {
+					f.AddTransition(terminal, to+offset, []rune{ch})
 				}
 			}
-			delete(f.transitions, terminal)
 		}
 	}
 
-	//Set new terminal
+	//Set new terminals
 	newTerms := []int{}
 	for _, term := range other.terminalStates {
 		newTerms = append(newTerms, term+offset)
