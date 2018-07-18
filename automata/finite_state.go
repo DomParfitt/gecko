@@ -11,26 +11,34 @@ type Executer interface {
 
 // FiniteState struct
 type FiniteState struct {
-	nextState     int
-	currentState  int
-	terminalState int
-	transitions   map[int]map[rune]int
+	nextState      int
+	currentState   int
+	terminalStates []int
+	transitions    map[int]map[rune]int
 }
 
 // New creates a default instance of a FiniteState
 // struct and returns a pointer to it
 func New() *FiniteState {
 	return &FiniteState{
-		nextState:     1,
-		currentState:  0,
-		terminalState: 0,
-		transitions:   make(map[int]map[rune]int),
+		nextState:      1,
+		currentState:   0,
+		terminalStates: []int{0},
+		transitions:    make(map[int]map[rune]int),
 	}
 }
 
-//SetTerminal state to provided
-func (f *FiniteState) SetTerminal(terminal int) {
-	f.terminalState = terminal
+// Create a new finite state with two states and a single set of transitions
+// from the first to the second using the provided characters
+func Create(chars []rune) *FiniteState {
+	f := New()
+	f.AddTransition(0, 1, chars)
+	f.terminalStates = []int{1}
+	return f
+}
+
+func (f *FiniteState) addTerminal(terminal int) {
+	f.terminalStates = append(f.terminalStates, terminal)
 }
 
 // AddTransition from one state to another which consumes one of the
@@ -67,10 +75,10 @@ func (f *FiniteState) Append(other *FiniteState) {
 	offset := f.nextState
 	f.nextState += other.nextState
 
-	//Update transitions to the original terminal state
+	//Update transitions to the original terminal states
 	for _, transition := range f.transitions {
 		for ch, to := range transition {
-			if to == f.terminalState {
+			if f.isTerminal(to) {
 				transition[ch] = offset
 			}
 		}
@@ -84,15 +92,24 @@ func (f *FiniteState) Append(other *FiniteState) {
 	}
 
 	//Update transitions from the original terminal state
-	if transition, ok := f.transitions[f.terminalState]; ok {
-		for ch, to := range transition {
-			f.AddTransition(other.terminalState+offset, to, []rune{ch})
+	for _, terminal := range f.terminalStates {
+
+		if transition, ok := f.transitions[terminal]; ok {
+			for ch, to := range transition {
+				for _, otherTerm := range other.terminalStates {
+					f.AddTransition(otherTerm+offset, to, []rune{ch})
+				}
+			}
+			delete(f.transitions, terminal)
 		}
-		delete(f.transitions, f.terminalState)
 	}
 
 	//Set new terminal
-	f.terminalState = other.terminalState + offset
+	newTerms := []int{}
+	for _, term := range other.terminalStates {
+		newTerms = append(newTerms, term+offset)
+	}
+	f.terminalStates = newTerms
 
 }
 
@@ -104,20 +121,28 @@ func (f *FiniteState) Union(other *FiniteState) {
 	//Copy transitions from other
 	for from, transition := range other.transitions {
 
+		isFromTerm := other.isTerminal(from)
+
+		//Anything from the other's initial goes from f's initial
+		//Anything else gets offset
 		if from != 0 {
 			from += offset
 		}
 
-		if from == other.terminalState {
-			from = f.terminalState
+		if isFromTerm {
+			f.addTerminal(from)
 		}
 
 		for ch, to := range transition {
 
-			if to == other.terminalState {
-				to = f.terminalState
-			} else if to != 0 {
+			isToTerm := other.isTerminal(to)
+
+			if to != 0 {
 				to += offset
+			}
+
+			if isToTerm {
+				f.addTerminal(to)
 			}
 
 			f.AddTransition(from, to, []rune{ch})
@@ -128,25 +153,23 @@ func (f *FiniteState) Union(other *FiniteState) {
 // Loop this automata on itself
 func (f *FiniteState) Loop() {
 	for from, transition := range f.transitions {
-		if from == f.terminalState {
-			for ch, to := range transition {
-				f.AddTransition(0, to, []rune{ch})
-			}
-			delete(f.transitions, from)
-		} else {
-			for ch, to := range transition {
-				if to == f.terminalState {
-					transition[ch] = 0
+
+		//If the transition comes from the initial state then we need
+		//matching transitions from each terminal state
+		if from == 0 {
+			for _, state := range f.terminalStates {
+				for ch, to := range transition {
+					f.AddTransition(state, to, []rune{ch})
 				}
 			}
 		}
 	}
 
-	f.terminalState = 0
+	f.addTerminal(0)
 }
 
 func (f *FiniteState) String() string {
-	str := fmt.Sprintf("Terminal: %d\n", f.terminalState)
+	str := fmt.Sprintf("Terminals: %v\n", f.terminalStates)
 	for from, transition := range f.transitions {
 		tran := ""
 		for ch, to := range transition {
@@ -168,7 +191,7 @@ func (f *FiniteState) Execute(input string) bool {
 			return false
 		}
 	}
-	return f.currentState == f.terminalState
+	return f.isTerminal(f.currentState)
 }
 
 // Consume a character and update the state of the
@@ -191,5 +214,14 @@ func (f *FiniteState) transition(from int, ch rune) bool {
 		return true
 	}
 
+	return false
+}
+
+func (f *FiniteState) isTerminal(state int) bool {
+	for _, val := range f.terminalStates {
+		if state == val {
+			return true
+		}
+	}
 	return false
 }
