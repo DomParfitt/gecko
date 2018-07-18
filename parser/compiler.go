@@ -11,10 +11,8 @@ type Compiler interface {
 
 //Compile an Element into a Finite State Machine
 func (e *Element) Compile() *automata.FiniteState {
-	a := automata.New()
-	a.AddTransition(0, 1, []rune{e.Value})
-	a.SetTerminal(1)
-	return a
+	return automata.Create([]rune{e.Value})
+
 }
 
 //Compile a Plus into a Finite State Machine
