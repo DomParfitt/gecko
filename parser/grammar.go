@@ -6,6 +6,11 @@ type RegExpr struct {
 	simple *SimpleExpr
 }
 
+//Group ::= (RegExpr)
+type Group struct {
+	regExpr *RegExpr
+}
+
 //Union ::= RegExpr "|" SimpleExpr
 type Union struct {
 	regex  *RegExpr
@@ -41,7 +46,8 @@ type Plus struct {
 	element *Element
 }
 
-//Element ::= Character
+//Element ::= Character | Group
 type Element struct {
 	Value rune
+	group *Group
 }

@@ -11,8 +11,11 @@ type Compiler interface {
 
 //Compile an Element into a Finite State Machine
 func (e *Element) Compile() *automata.FiniteState {
-	return automata.Create([]rune{e.Value})
+	if e.group != nil {
+		return e.group.Compile()
+	}
 
+	return automata.Create([]rune{e.Value})
 }
 
 //Compile a Plus into a Finite State Machine
@@ -75,6 +78,11 @@ func (u *Union) Compile() *automata.FiniteState {
 	b := u.regex.Compile()
 	a.Union(b)
 	return a
+}
+
+//Compile a Group into a Finite State Machine
+func (g *Group) Compile() *automata.FiniteState {
+	return g.regExpr.Compile()
 }
 
 //Compile a RegExpr into a Finite State Machine

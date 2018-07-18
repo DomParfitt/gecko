@@ -51,6 +51,27 @@ func (p *Parser) consume() (lexer.Token, bool) {
 	return token, true
 }
 
+//Consume and match against a given token type, resetting if
+// not matching
+func (p *Parser) consumeAndMatch(expected lexer.Type) bool {
+
+	reset := p.reset()
+
+	token, ok := p.consume()
+
+	if !ok {
+		reset()
+		return false
+	}
+
+	if token.Type != expected {
+		reset()
+		return false
+	}
+
+	return true
+}
+
 //Reset the cursor to a given value
 func (p *Parser) reset() func() {
 	cursor := p.cursor
@@ -60,8 +81,38 @@ func (p *Parser) reset() func() {
 
 }
 
+func (p *Parser) escape() (*Element, bool) {
+	reset := p.reset()
+
+	if !p.consumeAndMatch(lexer.Escape) {
+		return nil, false
+	}
+
+	token, ok := p.consume()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	return &Element{Value: token.Value, group: nil}, true
+}
+
 func (p *Parser) base() (*Element, bool) {
 	reset := p.reset()
+
+	group, ok := p.group()
+	if ok {
+		return &Element{Value: ' ', group: group}, true
+	}
+
+	reset()
+
+	element, ok := p.escape()
+	if ok {
+		return element, true
+	}
+
 	token, ok := p.consume()
 
 	if !ok {
@@ -74,7 +125,7 @@ func (p *Parser) base() (*Element, bool) {
 		return nil, false
 	}
 
-	return &Element{token.Value}, true
+	return &Element{Value: token.Value, group: nil}, true
 }
 
 func (p *Parser) star() (*Star, bool) {
@@ -86,15 +137,7 @@ func (p *Parser) star() (*Star, bool) {
 		return nil, false
 	}
 
-	token, ok := p.consume()
-
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	if token.Type != lexer.Star {
-		reset()
+	if !p.consumeAndMatch(lexer.Star) {
 		return nil, false
 	}
 
@@ -110,15 +153,7 @@ func (p *Parser) plus() (*Plus, bool) {
 		return nil, false
 	}
 
-	token, ok := p.consume()
-
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	if token.Type != lexer.Plus {
-		reset()
+	if !p.consumeAndMatch(lexer.Plus) {
 		return nil, false
 	}
 
@@ -195,15 +230,7 @@ func (p *Parser) union() (*Union, bool) {
 		return nil, false
 	}
 
-	token, ok := p.consume()
-
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	if token.Type != lexer.Pipe {
-		reset()
+	if !p.consumeAndMatch(lexer.Pipe) {
 		return nil, false
 	}
 
@@ -215,7 +242,27 @@ func (p *Parser) union() (*Union, bool) {
 	}
 
 	return &Union{regex, simple}, true
+}
 
+func (p *Parser) group() (*Group, bool) {
+	reset := p.reset()
+
+	if !p.consumeAndMatch(lexer.OpenBrace) {
+		return nil, false
+	}
+
+	regex, ok := p.regExpr()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.CloseBrace) {
+		return nil, false
+	}
+
+	return &Group{regex}, true
 }
 
 func (p *Parser) regExpr() (*RegExpr, bool) {
