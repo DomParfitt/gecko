@@ -2,6 +2,7 @@ package automata
 
 import (
 	"fmt"
+	"sort"
 )
 
 // Executer interface
@@ -174,6 +175,7 @@ func (f *FiniteState) Loop() {
 }
 
 func (f *FiniteState) String() string {
+	sort.Ints(f.terminalStates)
 	str := fmt.Sprintf("Terminals: %v\n", f.terminalStates)
 	for from, transition := range f.transitions {
 		tran := ""
