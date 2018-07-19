@@ -48,6 +48,52 @@ type Plus struct {
 
 //Element ::= Character | Group
 type Element struct {
+	// Value     rune
+	character *Character
+	group     *Group
+}
+
+//Escape ::= "\" Character
+type Escape struct {
 	Value rune
-	group *Group
+}
+
+//Character ::= literal character
+type Character struct {
+	escape *Escape
+	Value  rune
+}
+
+//Set ::= PositiveSet | NegativeSet
+type Set struct {
+	positive *PositiveSet
+	negative *NegativeSet
+}
+
+//PositiveSet ::= "[" SetItems "]"
+type PositiveSet struct {
+	items *SetItems
+}
+
+//NegativeSet ::= "[" "^" SetItems "]"
+type NegativeSet struct {
+	items *SetItems
+}
+
+//SetItems ::= SetItem SetItems
+type SetItems struct {
+	item  *SetItem
+	items *SetItems
+}
+
+//SetItem ::= Range | Character
+type SetItem struct {
+	rnge      *Range
+	character *Character
+}
+
+//Range ::= Character "-" Character
+type Range struct {
+	start *Character
+	end   *Character
 }
