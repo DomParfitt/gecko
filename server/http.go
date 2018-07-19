@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/DomParfitt/gecko/compiler"
+	"github.com/DomParfitt/gecko/compiler/automata"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"

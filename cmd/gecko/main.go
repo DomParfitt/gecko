@@ -1,7 +1,9 @@
 package gecko
 
 import (
-	"github.com/DomParfitt/gecko/server"
+	"fmt"
+	"github.com/DomParfitt/gecko/compiler"
+	"os"
 )
 
 func main() {
