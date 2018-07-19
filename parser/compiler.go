@@ -34,7 +34,6 @@ func (e *Element) Compile() *automata.FiniteState {
 	}
 
 	panic("invalid")
-
 }
 
 //Compile a Plus into a Finite State Machine
@@ -146,11 +145,10 @@ func (s *SetItems) Compile() *automata.FiniteState {
 
 	if s.items != nil {
 		b := s.items.Compile()
-		a.Append(b)
+		a.Union(b)
 	}
 
 	return a
-
 }
 
 //Compile a SetItem into a Finite State Machine
@@ -164,7 +162,6 @@ func (s *SetItem) Compile() *automata.FiniteState {
 	}
 
 	panic("invalid")
-
 }
 
 //Compile a Range into a Finite State Machine
@@ -173,6 +170,7 @@ func (r *Range) Compile() *automata.FiniteState {
 	for i := r.start.Value; i <= r.end.Value; i++ {
 		chars = append(chars, i)
 	}
+
 	return automata.Create(chars)
 }
 
