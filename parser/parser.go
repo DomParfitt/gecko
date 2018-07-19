@@ -133,6 +133,13 @@ func (p *Parser) base() (*Element, bool) {
 
 	reset()
 
+	set, ok := p.set()
+	if ok {
+		return &Element{set: set}, true
+	}
+
+	reset()
+
 	character, ok := p.character()
 	if ok {
 		return &Element{character: character}, true
@@ -297,4 +304,133 @@ func (p *Parser) regExpr() (*RegExpr, bool) {
 
 	reset()
 	return nil, false
+}
+
+func (p *Parser) set() (*Set, bool) {
+	reset := p.reset()
+
+	positive, ok := p.positiveSet()
+	if ok {
+		return &Set{positive: positive}, true
+	}
+
+	reset()
+
+	negative, ok := p.negativeSet()
+	if ok {
+		return &Set{negative: negative}, true
+	}
+
+	reset()
+	return nil, false
+
+}
+
+func (p *Parser) positiveSet() (*PositiveSet, bool) {
+	reset := p.reset()
+
+	if !p.consumeAndMatch(lexer.OpenBracket) {
+		return nil, false
+	}
+
+	setItems, ok := p.setItems()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.CloseBracket) {
+		return nil, false
+	}
+
+	return &PositiveSet{setItems}, true
+
+}
+
+func (p *Parser) negativeSet() (*NegativeSet, bool) {
+	reset := p.reset()
+
+	if !p.consumeAndMatch(lexer.OpenBracket) {
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.Caret) {
+		return nil, false
+	}
+
+	setItems, ok := p.setItems()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.CloseBracket) {
+		return nil, false
+	}
+
+	return &NegativeSet{setItems}, true
+}
+
+func (p *Parser) setItems() (*SetItems, bool) {
+	reset := p.reset()
+
+	item, ok := p.setItem()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	items, ok := p.setItems()
+
+	return &SetItems{item: item, items: items}, true
+
+}
+
+func (p *Parser) setItem() (*SetItem, bool) {
+	reset := p.reset()
+
+	rnge, ok := p.rangeExpr()
+
+	if ok {
+		return &SetItem{rnge: rnge}, true
+	}
+
+	reset()
+
+	character, ok := p.character()
+
+	if ok {
+		return &SetItem{character: character}, true
+	}
+
+	reset()
+	return nil, false
+
+}
+
+func (p *Parser) rangeExpr() (*Range, bool) {
+	reset := p.reset()
+	start, ok := p.character()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.Dash) {
+		return nil, false
+	}
+
+	end, ok := p.character()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	return &Range{start, end}, true
+
 }
