@@ -12,6 +12,10 @@ type Type int
 // Accepted Types of Token
 const (
 	Character Type = iota
+	OpenParen
+	CloseParen
+	OpenBracket
+	CloseBracket
 	OpenBrace
 	CloseBrace
 	Star
@@ -35,34 +39,28 @@ func (t Token) String() string {
 
 // Match the provided character to a Type of Token.
 func Match(ch rune) Type {
-	if ch == '(' || ch == '[' || ch == '{' {
+	switch ch {
+	case '(':
+		return OpenParen
+	case ')':
+		return CloseParen
+	case '[':
+		return OpenBracket
+	case ']':
+		return CloseBracket
+	case '{':
 		return OpenBrace
-	}
-
-	if ch == ')' || ch == ']' || ch == '}' {
+	case '}':
 		return CloseBrace
-	}
-
-	if ch == '*' {
+	case '*':
 		return Star
-	}
-
-	if ch == '+' {
-		return Plus
-	}
-
-	if ch == '^' {
+	case '^':
 		return Caret
-	}
-
-	if ch == '\\' {
+	case '\\':
 		return Escape
-	}
-
-	if ch == '|' {
+	case '|':
 		return Pipe
+	default:
+		return Character
 	}
-
-	return Character
-
 }
