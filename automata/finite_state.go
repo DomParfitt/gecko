@@ -167,6 +167,25 @@ func (f *FiniteState) Loop() {
 	f.addTerminal(0)
 }
 
+// Negate this automata, i.e. make it non-accepting on it's original pattern
+func (f *FiniteState) Negate() {
+	terminals := []int{}
+
+	for from, transition := range f.transitions {
+		if !f.isTerminal(from) {
+			terminals = append(terminals, from)
+		}
+
+		for _, to := range transition {
+			if !f.isTerminal(to) {
+				terminals = append(terminals, to)
+			}
+		}
+	}
+
+	f.terminalStates = terminals
+}
+
 func (f *FiniteState) String() string {
 	sort.Ints(f.terminalStates)
 	str := fmt.Sprintf("Terminals: %v\n", f.terminalStates)
