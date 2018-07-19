@@ -136,7 +136,9 @@ func (p *PositiveSet) Compile() *automata.FiniteState {
 
 //Compile a NegativeSet into a Finite State Machine
 func (n *NegativeSet) Compile() *automata.FiniteState {
-	return nil
+	a := n.items.Compile()
+	a.Negate()
+	return a
 }
 
 //Compile a SetItems into a Finite State Machine
