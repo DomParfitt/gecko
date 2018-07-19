@@ -117,6 +117,65 @@ func (r *RegExpr) Compile() *automata.FiniteState {
 	panic("invalid")
 }
 
+//Compile a Set into a Finite State Machine
+func (s *Set) Compile() *automata.FiniteState {
+	if s.positive != nil {
+		return s.positive.Compile()
+	}
+
+	if s.negative != nil {
+		return s.negative.Compile()
+	}
+
+	panic("invalid")
+}
+
+//Compile a PositiveSet into a Finite State Machine
+func (p *PositiveSet) Compile() *automata.FiniteState {
+	return p.items.Compile()
+}
+
+//Compile a NegativeSet into a Finite State Machine
+func (n *NegativeSet) Compile() *automata.FiniteState {
+	return nil
+}
+
+//Compile a SetItems into a Finite State Machine
+func (s *SetItems) Compile() *automata.FiniteState {
+	a := s.item.Compile()
+
+	if s.items != nil {
+		b := s.items.Compile()
+		a.Append(b)
+	}
+
+	return a
+
+}
+
+//Compile a SetItem into a Finite State Machine
+func (s *SetItem) Compile() *automata.FiniteState {
+	if s.rnge != nil {
+		return s.rnge.Compile()
+	}
+
+	if s.character != nil {
+		return s.character.Compile()
+	}
+
+	panic("invalid")
+
+}
+
+//Compile a Range into a Finite State Machine
+func (r *Range) Compile() *automata.FiniteState {
+	chars := []rune{}
+	for i := r.start.Value; i <= r.end.Value; i++ {
+		chars = append(chars, i)
+	}
+	return automata.Create(chars)
+}
+
 // Compile something implementing the Compiler interface and return the result
 // on the provided channel
 func compile(ch chan<- *automata.FiniteState, compilable Compiler) {
