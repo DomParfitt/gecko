@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/DomParfitt/gecko/automata"
 	"github.com/DomParfitt/gecko/compiler"
 	"github.com/gorilla/mux"
 	"log"

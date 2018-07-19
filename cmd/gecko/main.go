@@ -1,4 +1,4 @@
-package main
+package gecko
 
 import (
 	"github.com/DomParfitt/gecko/server"

@@ -2,9 +2,7 @@ package compiler
 
 import (
 	"fmt"
-	"github.com/DomParfitt/gecko/automata"
-	"github.com/DomParfitt/gecko/lexer"
-	"github.com/DomParfitt/gecko/parser"
+	"github.com/DomParfitt/gecko/compiler/parser"
 )
 
 //Compiler wraps the entire process for compiling and matching
