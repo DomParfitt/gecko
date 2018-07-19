@@ -9,13 +9,32 @@ type Compiler interface {
 	Compile() *automata.FiniteState
 }
 
+//Compile an Escape into a Finite State Machine
+func (e *Escape) Compile() *automata.FiniteState {
+	return automata.Create([]rune{e.Value})
+}
+
+//Compile a Character into a Finite State Machine
+func (c *Character) Compile() *automata.FiniteState {
+	if c.escape != nil {
+		return c.escape.Compile()
+	}
+
+	return automata.Create([]rune{c.Value})
+}
+
 //Compile an Element into a Finite State Machine
 func (e *Element) Compile() *automata.FiniteState {
 	if e.group != nil {
 		return e.group.Compile()
 	}
 
-	return automata.Create([]rune{e.Value})
+	if e.character != nil {
+		return e.character.Compile()
+	}
+
+	panic("invalid")
+
 }
 
 //Compile a Plus into a Finite State Machine
