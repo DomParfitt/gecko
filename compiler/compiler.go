@@ -11,7 +11,7 @@ import (
 // a regex
 type Compiler struct {
 	parser *parser.Parser
-	exe    *automata.FiniteState
+	Exe    *automata.FiniteState
 }
 
 //New Compiler
@@ -30,7 +30,7 @@ func (c *Compiler) Compile(pattern string) error {
 		return err
 	}
 
-	c.exe = ast.Compile()
+	c.Exe = ast.Compile()
 
 	return nil
 }
@@ -38,11 +38,11 @@ func (c *Compiler) Compile(pattern string) error {
 //Match the input string against the compiled executable.
 //Returns an error if no pattern has been provided
 func (c *Compiler) Match(input string) (bool, error) {
-	if c.exe == nil {
+	if c.Exe == nil {
 		return false, fmt.Errorf("unable to match input: %s - no pattern initialised", input)
 	}
 
-	return c.exe.Execute(input), nil
+	return c.Exe.Execute(input), nil
 }
 
 //MatchPattern takes a pattern and an input, compiles the pattern and
