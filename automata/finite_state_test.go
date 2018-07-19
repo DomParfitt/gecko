@@ -23,7 +23,7 @@ func TestExecutePass(t *testing.T) {
 func TestAddTransitionOverwrite(t *testing.T) {
 	f := New()
 	f.AddTransition(0, 1, []rune{'a'})
-	if transition, ok := f.transitions[0]; ok {
+	if transition, ok := f.Transitions[0]; ok {
 		if to, ok := transition['a']; !ok || to != 1 {
 			t.Errorf("Expected transition did not exist")
 		}
@@ -32,7 +32,7 @@ func TestAddTransitionOverwrite(t *testing.T) {
 	}
 
 	f.AddTransition(0, 2, []rune{'a'})
-	if transition, ok := f.transitions[0]; ok {
+	if transition, ok := f.Transitions[0]; ok {
 		if to, ok := transition['a']; !ok || to != 2 {
 			t.Errorf("Expected transition did not exist")
 		}
@@ -51,7 +51,7 @@ func TestAppend(t *testing.T) {
 	f.AddTransition(0, 1, []rune{'a'})
 	f.AddTransition(1, 2, []rune{'b'})
 	f.AddTransition(2, 1, []rune{'x'})
-	f.terminalStates = []int{2}
+	f.TerminalStates = []int{2}
 
 	g := Create([]rune{'c'})
 
@@ -86,7 +86,7 @@ func TestLoop(t *testing.T) {
 	f.AddTransition(1, 2, []rune{'b'})
 	f.AddTransition(2, 3, []rune{'c'})
 	f.AddTransition(3, 2, []rune{'d'})
-	f.terminalStates = []int{2}
+	f.TerminalStates = []int{2}
 	f.Loop()
 
 	fmt.Println(f)
