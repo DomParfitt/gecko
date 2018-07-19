@@ -29,6 +29,10 @@ func (e *Element) Compile() *automata.FiniteState {
 		return e.group.Compile()
 	}
 
+	if e.set != nil {
+		return e.set.Compile()
+	}
+
 	if e.character != nil {
 		return e.character.Compile()
 	}

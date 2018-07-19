@@ -46,11 +46,12 @@ type Plus struct {
 	element *Element
 }
 
-//Element ::= Character | Group
+//Element ::= Character | Group | Set
 type Element struct {
 	// Value     rune
 	character *Character
 	group     *Group
+	set       *Set
 }
 
 //Escape ::= "\" Character
