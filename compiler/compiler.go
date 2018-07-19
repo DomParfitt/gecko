@@ -2,6 +2,8 @@ package compiler
 
 import (
 	"fmt"
+	"github.com/DomParfitt/gecko/compiler/automata"
+	"github.com/DomParfitt/gecko/compiler/lexer"
 	"github.com/DomParfitt/gecko/compiler/parser"
 )
 
