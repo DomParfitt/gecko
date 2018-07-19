@@ -23,7 +23,7 @@ const (
 	Caret
 	Escape
 	Pipe
-	None
+	Dash
 )
 
 //Token represents a lexed charcter. Contains the
@@ -60,6 +60,8 @@ func Match(ch rune) Type {
 		return Escape
 	case '|':
 		return Pipe
+	case '-':
+		return Dash
 	default:
 		return Character
 	}
