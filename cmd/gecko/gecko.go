@@ -1,4 +1,4 @@
-package gecko
+package main
 
 import (
 	"fmt"
