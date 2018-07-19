@@ -261,7 +261,7 @@ func (p *Parser) union() (*Union, bool) {
 func (p *Parser) group() (*Group, bool) {
 	reset := p.reset()
 
-	if !p.consumeAndMatch(lexer.OpenBrace) {
+	if !p.consumeAndMatch(lexer.OpenParen) {
 		return nil, false
 	}
 
@@ -272,7 +272,7 @@ func (p *Parser) group() (*Group, bool) {
 		return nil, false
 	}
 
-	if !p.consumeAndMatch(lexer.CloseBrace) {
+	if !p.consumeAndMatch(lexer.CloseParen) {
 		return nil, false
 	}
 
