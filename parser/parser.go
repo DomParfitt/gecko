@@ -81,7 +81,31 @@ func (p *Parser) reset() func() {
 
 }
 
-func (p *Parser) escape() (*Element, bool) {
+func (p *Parser) character() (*Character, bool) {
+	reset := p.reset()
+
+	escape, ok := p.escape()
+	if ok {
+		return &Character{escape: escape}, true
+	}
+
+	reset()
+	token, ok := p.consume()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if token.Type != lexer.Character {
+		reset()
+		return nil, false
+	}
+
+	return &Character{Value: token.Value}, true
+}
+
+func (p *Parser) escape() (*Escape, bool) {
 	reset := p.reset()
 
 	if !p.consumeAndMatch(lexer.Escape) {
@@ -95,7 +119,8 @@ func (p *Parser) escape() (*Element, bool) {
 		return nil, false
 	}
 
-	return &Element{Value: token.Value, group: nil}, true
+	return &Escape{token.Value}, true
+
 }
 
 func (p *Parser) base() (*Element, bool) {
@@ -103,29 +128,18 @@ func (p *Parser) base() (*Element, bool) {
 
 	group, ok := p.group()
 	if ok {
-		return &Element{Value: ' ', group: group}, true
+		return &Element{group: group}, true
 	}
 
 	reset()
 
-	element, ok := p.escape()
+	character, ok := p.character()
 	if ok {
-		return element, true
+		return &Element{character: character}, true
 	}
 
-	token, ok := p.consume()
-
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	if token.Type != lexer.Character {
-		reset()
-		return nil, false
-	}
-
-	return &Element{Value: token.Value, group: nil}, true
+	reset()
+	return nil, false
 }
 
 func (p *Parser) star() (*Star, bool) {
