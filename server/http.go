@@ -14,6 +14,10 @@ import (
 func Run() {
 	router := mux.NewRouter()
 	router.HandleFunc("/pattern/{pattern}", patternHandler)
+	go func() {
+		fmt.Println("Listening on port 4200...")
+		log.Fatal(http.ListenAndServe(":4200", http.FileServer(http.Dir("./dist/view/"))))
+	}()
 	fmt.Println("Listening on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
