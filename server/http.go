@@ -11,15 +11,11 @@ import (
 )
 
 //Run the server
-func Run() {
+func Serve(port string) {
 	router := mux.NewRouter()
 	router.HandleFunc("/pattern/{pattern}", patternHandler)
-	go func() {
-		fmt.Println("Listening on port 4200...")
-		log.Fatal(http.ListenAndServe(":4200", http.FileServer(http.Dir("./dist/view/"))))
-	}()
-	fmt.Println("Listening on port 8080...")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	fmt.Printf("Listening on port %s...\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
 func patternHandler(w http.ResponseWriter, r *http.Request) {

@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
+	go server.ServeView("4200")
 	server.Serve("8080")
 }
