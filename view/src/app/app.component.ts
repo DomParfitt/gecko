@@ -1,5 +1,5 @@
 import { Component, Injectable } from '@angular/core';
-import { HttpClient } from '../../node_modules/@angular/common/http';
+import { AutomataService, Automata } from './automata.service';
 
 @Component({
   selector: 'app-root',
@@ -11,21 +11,13 @@ export class AppComponent {
   title = 'Gecko';
   result: Automata;
 
-  constructor(private http: HttpClient) { }
+  constructor(private automata: AutomataService) { }
 
   handleClick(pattern: string) {
-    // let json;
-    this.http
-      .get<Automata>('http://localhost:8080/pattern/' + pattern)
+    this.automata.getAutomata(pattern)
       .subscribe((data) => {
         this.result = { ...data };
-        console.log(this.result);
       });
   }
 }
 
-export interface Automata {
-  CurrentState: number;
-  TerminalStates: number[];
-  Transitions: any;
-}
