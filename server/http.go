@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-//Run the server
+//Serve http content on given port
 func Serve(port string) {
 	router := mux.NewRouter()
 	router.HandleFunc("/pattern/{pattern}", patternHandler)
@@ -44,17 +44,21 @@ func marshal(exe *automata.FiniteState) ([]byte, error) {
 		TerminalStates: exe.TerminalStates,
 	}
 
+	states := []int{}
 	transitions := make(map[int]map[string]int)
 	for from, transition := range exe.Transitions {
+		states = append(states, from)
 		_, ok := transitions[from]
 		if !ok {
 			transitions[from] = make(map[string]int)
 		}
 		for ch, to := range transition {
+			states = append(states, to)
 			transitions[from][string(ch)] = to
 		}
 	}
 
+	a.States = states
 	a.Transitions = transitions
 
 	return json.Marshal(a)
@@ -63,5 +67,6 @@ func marshal(exe *automata.FiniteState) ([]byte, error) {
 type jsonAutomata struct {
 	CurrentState   int
 	TerminalStates []int
+	States         []int
 	Transitions    map[int]map[string]int
 }
