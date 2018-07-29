@@ -1,4 +1,5 @@
-import { Component, Injectable } from '@angular/core';
+import { GraphComponent } from './graph/graph.component';
+import { Component, Injectable, ViewChild, AfterViewInit } from '@angular/core';
 import { AutomataService, Automata } from './automata.service';
 
 @Component({
@@ -7,9 +8,13 @@ import { AutomataService, Automata } from './automata.service';
   styleUrls: ['./app.component.css']
 })
 @Injectable()
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
+
   title = 'Gecko';
   result: Automata;
+
+  @ViewChild(GraphComponent)
+  graph: GraphComponent;
 
   constructor(private automata: AutomataService) { }
 
@@ -17,7 +22,12 @@ export class AppComponent {
     this.automata.getAutomata(pattern)
       .subscribe((data) => {
         this.result = { ...data };
+        this.graph.displayAutomata(this.result);
       });
+  }
+
+  ngAfterViewInit(): void {
+    // throw new Error('Method not implemented.');
   }
 }
 

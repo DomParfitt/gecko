@@ -19,5 +19,6 @@ export class AutomataService {
 export interface Automata {
   CurrentState: number;
   TerminalStates: number[];
+  States: number[];
   Transitions: any;
 }
