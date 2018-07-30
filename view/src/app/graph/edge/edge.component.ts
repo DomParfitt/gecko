@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -9,9 +9,16 @@ import { Component, OnInit } from '@angular/core';
 
 export class EdgeComponent implements OnInit {
 
+  @Input()
   label = 'edge';
   from: string;
   to: string;
+
+  @Input()
+  x = 0;
+
+  @Input()
+  y = 0;
 
   constructor() {
   }

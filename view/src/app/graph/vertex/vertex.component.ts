@@ -9,8 +9,14 @@ import { Component, OnInit, Input } from '@angular/core';
 
 export class VertexComponent implements OnInit {
 
+  @Input()
   label = '0';
+
+  @Input()
   isTerminal = false;
+
+  @Input()
+  isCurrent = false;
 
   @Input()
   x = 0;
