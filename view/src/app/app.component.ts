@@ -1,6 +1,7 @@
 import { GraphComponent } from './graph/graph.component';
 import { Component, Injectable, ViewChild, AfterViewInit } from '@angular/core';
 import { AutomataService, Automata } from './automata.service';
+import { NxGraphComponent } from './nx-graph/nx-graph.component';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,9 @@ export class AppComponent implements AfterViewInit {
   @ViewChild(GraphComponent)
   graph: GraphComponent;
 
+  @ViewChild(NxGraphComponent)
+  nxGraph: NxGraphComponent;
+
   constructor(private automata: AutomataService) { }
 
   handleClick(pattern: string) {
@@ -23,6 +27,7 @@ export class AppComponent implements AfterViewInit {
       .subscribe((data) => {
         this.result = { ...data };
         this.graph.displayAutomata(this.result);
+        this.nxGraph.displayAutomata(this.result);
       });
   }
 

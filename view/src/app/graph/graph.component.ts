@@ -57,7 +57,7 @@ export class GraphComponent {
     automata.States.sort();
     automata.States.forEach((state, index) => {
       const v = this.createVertex(state, automata.TerminalStates);
-      v.x = index * 100;
+      v.x = index * 200;
       if (automata.CurrentState === state) {
         v.isCurrent = true;
       }
@@ -82,7 +82,9 @@ export class GraphComponent {
         for (const char in automata.Transitions[from]) {
           if (automata.Transitions[from].hasOwnProperty(char)) {
             const e = this.createEdge(from, automata.Transitions[from][char], char);
-            e.y = i * 100;
+            console.log(from);
+            e.y = -25;
+            e.x = (automata.States.indexOf(Number(from)) * 200) + 100;
             this.edges.push(e);
             i++;
           }
