@@ -47,13 +47,17 @@ func marshal(exe *automata.FiniteState) ([]byte, error) {
 	states := []int{}
 	transitions := make(map[int]map[string]int)
 	for from, transition := range exe.Transitions {
-		states = append(states, from)
+		if !contains(states, from) {
+			states = append(states, from)
+		}
 		_, ok := transitions[from]
 		if !ok {
 			transitions[from] = make(map[string]int)
 		}
 		for ch, to := range transition {
-			states = append(states, to)
+			if !contains(states, to) {
+				states = append(states, to)
+			}
 			transitions[from][string(ch)] = to
 		}
 	}
@@ -62,6 +66,16 @@ func marshal(exe *automata.FiniteState) ([]byte, error) {
 	a.Transitions = transitions
 
 	return json.Marshal(a)
+}
+
+func contains(array []int, value int) bool {
+	for _, present := range array {
+		if present == value {
+			return true
+		}
+	}
+
+	return false
 }
 
 type jsonAutomata struct {
