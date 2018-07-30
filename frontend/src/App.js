@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import VisGraph  from './vis/VisGraph';
+import D3Graph from './d3/D3Graph';
 
 class App extends Component {
   handleClick(pattern) {
@@ -16,6 +17,7 @@ class App extends Component {
         <input ref="inputBox" type="text" placeholder="Enter a pattern"></input>
         <button onClick={() => this.handleClick(this.refs.inputBox.value)}>Enter</button>
         <VisGraph />
+        <D3Graph />
       </div>
     );
   }
