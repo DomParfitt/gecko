@@ -2,21 +2,20 @@ import React, {Component} from 'react';
 import { select } from 'd3-selection';
 import {} from 'd3-graphviz';
 
-export default class Graph extends Component {
+class Graph extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            currentNode: 0,
-            nodes: [
-                {id: 0, isTerminal: false},
-                {id: 1, isTerminal: true},
-            ],
-            edges: [{from: 0, to: 1, label: 'a'}]
-        };
     }
 
-    componentDidMount() {
+    render() {
+        console.log("child rendered");
+        return(
+            <div id="graphDiv" ref="graphDiv"></div>
+        );
+    }
+
+    loadGraph() {
         select('#graphDiv')
             .graphviz()
             .height(500)
@@ -26,17 +25,22 @@ export default class Graph extends Component {
             .renderDot(this.generateDot());
     }
 
-    render() {
-        return(
-            <div id="graphDiv" ref="graphDiv"></div>
-        );
+    componentDidMount() {
+        console.log("child mounted");
+        this.loadGraph();
+    }
+
+    componentDidUpdate() {
+        console.log("child updated");
+        this.loadGraph();
     }
 
     generateDot() {
+        console.log(this.props);
         let dot = 'digraph { rankdir="LR";\n';
 
-        for(let i = 0; i < this.state.nodes.length; i++) {
-            const node = this.state.nodes[i];
+        for(let i = 0; i < this.props.nodes.length; i++) {
+            const node = this.props.nodes[i];
             dot += node.id +' [';
 
             if (node.isTerminal) {
@@ -45,15 +49,15 @@ export default class Graph extends Component {
                 dot += 'shape="circle" ';
             }
 
-            if (i === this.state.currentNode) {
+            if (node.id === this.props.currentNode) {
                 dot += 'fillcolor="red" style="filled" ';
             }
 
             dot += '];\n';
         }
 
-        for(let i = 0; i < this.state.edges.length; i++) {
-            const edge = this.state.edges[i];
+        for(let i = 0; i < this.props.edges.length; i++) {
+            const edge = this.props.edges[i];
             dot += edge.from + '->' + edge.to + ' [label="' + edge.label + '"];\n';
         }
 
@@ -61,3 +65,5 @@ export default class Graph extends Component {
         return dot;
     }
 }
+
+export default Graph;
