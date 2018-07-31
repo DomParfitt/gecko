@@ -9,7 +9,7 @@ class App extends Component {
 
     this.state = {
       input: "",
-      pattern: "",
+      pattern: "abc",
       ast: {},
       automata: {
         currentNode: 0,
@@ -21,7 +21,7 @@ class App extends Component {
         edges: [
           { from: 0, to: 1, label: 'a' },
           { from: 1, to: 2, label: 'b' },
-          { from: 2, to: 1, label: 'd' },
+          { from: 2, to: 1, label: 'c' },
         ]
       }
     };
