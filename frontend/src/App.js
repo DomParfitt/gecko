@@ -21,30 +21,30 @@ class App extends Component {
       ]
     };
 
-    this.handleAutomataData =this.handleAutomataData.bind(this);
+    this.handleAutomataData = this.handleAutomataData.bind(this);
   }
 
   handleClick(pattern) {
     console.log(pattern);
     fetch("http://localhost:8080/pattern/" + pattern)
       .then((resp) => resp.json())
-      .then((data) => { console.log(data); this.handleAutomataData(data) })
+      .then((data) => { console.log(data); this.handleAutomataData(data) });
   }
 
   handleAutomataData(automata) {
 
     const newNodes = [];
-    for(const state of automata.States) {
+    for (const state of automata.States) {
       const terminal = automata.TerminalStates.includes(state);
-      newNodes.push({id: state, isTerminal: terminal});
+      newNodes.push({ id: state, isTerminal: terminal });
     }
 
     const newEdges = [];
     const transitions = automata.Transitions;
-    for(const from in transitions) {
-      for(const over in transitions[from]) {
+    for (const from in transitions) {
+      for (const over in transitions[from]) {
         const to = transitions[from][over];
-        newEdges.push({from: from, to: to, label: over});
+        newEdges.push({ from: from, to: to, label: over });
       }
     }
 
@@ -60,8 +60,15 @@ class App extends Component {
     console.log("parent rendered");
     return (
       <div className="App">
-        <input ref="inputBox" type="text" placeholder="Enter a pattern"></input>
-        <button onClick={() => this.handleClick(this.refs.inputBox.value)}>Enter</button>
+        <h1>Welcome to Gecko!</h1>
+        <div>
+          <input ref="patternBox" type="text" placeholder="Enter a pattern" onChange={() => this.handleClick(this.refs.patternBox.value)}></input>
+          <button onClick={() => this.handleClick(this.refs.patternBox.value)}>Enter</button>
+        </div>
+        <div>
+          <input ref="inputBox" type="text" placeholder="Enter an input" onChange={() => console.log("not yet implemented")}></input>
+          <button onClick={() => console.log("not yet implemented")}>Enter</button>
+        </div>
         <Graph currentNode={this.state.currentNode} nodes={this.state.nodes} edges={this.state.edges} />
       </div>
     );
