@@ -8,17 +8,22 @@ class App extends Component {
     super(props);
 
     this.state = {
-      currentNode: 0,
-      nodes: [
-        { id: 0, isTerminal: false },
-        { id: 1, isTerminal: true },
-        { id: 2, isTerminal: false },
-      ],
-      edges: [
-        { from: 0, to: 1, label: 'a' },
-        { from: 1, to: 2, label: 'b' },
-        { from: 2, to: 1, label: 'd' },
-      ]
+      input: "",
+      pattern: "",
+      ast: {},
+      automata: {
+        currentNode: 0,
+        nodes: [
+          { id: 0, isTerminal: false },
+          { id: 1, isTerminal: true },
+          { id: 2, isTerminal: false },
+        ],
+        edges: [
+          { from: 0, to: 1, label: 'a' },
+          { from: 1, to: 2, label: 'b' },
+          { from: 2, to: 1, label: 'd' },
+        ]
+      }
     };
 
     this.handleAutomataData = this.handleAutomataData.bind(this);
@@ -28,7 +33,11 @@ class App extends Component {
     console.log(pattern);
     fetch("http://localhost:8080/pattern/" + pattern)
       .then((resp) => resp.json())
-      .then((data) => { console.log(data); this.handleAutomataData(data) });
+      .then((data) => { 
+        console.log(data); 
+        this.state.pattern = pattern;
+        this.handleAutomataData(data); 
+      });
   }
 
   handleAutomataData(automata) {
@@ -48,16 +57,16 @@ class App extends Component {
       }
     }
 
-    this.setState({
+    const newAutomata = {
       currentNode: automata.CurrentState,
       nodes: newNodes.sort(),
       edges: newEdges
-    });
-    console.log(this.state);
+    };
+
+    this.setState(state => state.automata = newAutomata);
   }
 
   render() {
-    console.log("parent rendered");
     return (
       <div className="App">
         <h1>Welcome to Gecko!</h1>
@@ -69,7 +78,9 @@ class App extends Component {
           <input ref="inputBox" type="text" placeholder="Enter an input" onChange={() => console.log("not yet implemented")}></input>
           <button onClick={() => console.log("not yet implemented")}>Enter</button>
         </div>
-        <Graph currentNode={this.state.currentNode} nodes={this.state.nodes} edges={this.state.edges} />
+        <div>Pattern: {this.state.pattern}</div>
+        <div>Input: {this.state.input}</div>
+        <Graph currentNode={this.state.automata.currentNode} nodes={this.state.automata.nodes} edges={this.state.automata.edges} />
       </div>
     );
   }

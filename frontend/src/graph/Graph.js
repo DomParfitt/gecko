@@ -9,7 +9,6 @@ class Graph extends Component {
     }
 
     render() {
-        console.log("child rendered");
         return(
             <div id="graphDiv" ref="graphDiv"></div>
         );
@@ -26,17 +25,14 @@ class Graph extends Component {
     }
 
     componentDidMount() {
-        console.log("child mounted");
         this.loadGraph();
     }
 
     componentDidUpdate() {
-        console.log("child updated");
         this.loadGraph();
     }
 
     generateDot() {
-        console.log(this.props);
         let dot = 'digraph { rankdir="LR";\n';
 
         for(const node of this.props.nodes) {
