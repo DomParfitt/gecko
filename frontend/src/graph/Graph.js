@@ -8,7 +8,11 @@ export default class Graph extends Component {
         select('#graphDiv')
             .graphviz()
             .renderDot(
-                'digraph { rankdir="LR"; a -> b; a -> c; b -> a}'
+                `digraph { rankdir="LR"; 
+                    0 -> 1 [label="a"]; 
+                    0 -> 2 [label="b"]; 
+                    1 -> 0 [label="c"];
+                }`
             );
     }
 
