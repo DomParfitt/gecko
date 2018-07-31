@@ -7,6 +7,10 @@ export default class Graph extends Component {
     componentDidMount() {
         select('#graphDiv')
             .graphviz()
+            .height(500)
+            .width(500)
+            .fit(true)
+            .zoom(false)
             .renderDot(
                 `digraph { rankdir="LR"; 
                     0 -> 1 [label="a"]; 
