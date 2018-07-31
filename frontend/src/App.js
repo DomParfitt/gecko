@@ -34,8 +34,7 @@ class App extends Component {
   handleAutomataData(automata) {
 
     const newNodes = [];
-    for(let i = 0; i < automata.States.length; i++) {
-      const state = automata.States[i];
+    for(const state of automata.States) {
       const terminal = automata.TerminalStates.includes(state);
       newNodes.push({id: state, isTerminal: terminal});
     }

@@ -39,8 +39,7 @@ class Graph extends Component {
         console.log(this.props);
         let dot = 'digraph { rankdir="LR";\n';
 
-        for(let i = 0; i < this.props.nodes.length; i++) {
-            const node = this.props.nodes[i];
+        for(const node of this.props.nodes) {
             dot += node.id +' [';
 
             if (node.isTerminal) {
@@ -56,8 +55,7 @@ class Graph extends Component {
             dot += '];\n';
         }
 
-        for(let i = 0; i < this.props.edges.length; i++) {
-            const edge = this.props.edges[i];
+        for(const edge of this.props.edges) {
             dot += edge.from + '->' + edge.to + ' [label="' + edge.label + '"];\n';
         }
 
