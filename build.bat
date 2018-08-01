@@ -11,9 +11,6 @@ for /R %build_path%\cmd\ %%f in (*.go) do (
     go.exe build %%f
 )
 
-echo Installing binaries in target directory
-move %build_path%\*.exe %install_path%
-
 cd %build_path%\frontend
 
 echo Installing any missing dependencies
@@ -21,6 +18,9 @@ call npm install
 
 echo Building front end
 call npm run build
+
+echo Installing binaries in target directory
+move %build_path%\*.exe %install_path%
 
 echo Installing resources in target directory
 xcopy /s/e/y %build_path%\frontend\build %install_path%\frontend\build
