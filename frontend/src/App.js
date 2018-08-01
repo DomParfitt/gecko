@@ -33,11 +33,19 @@ class App extends Component {
     console.log(pattern);
     fetch("http://localhost:8080/pattern/" + pattern)
       .then((resp) => resp.json())
-      .then((data) => { 
-        console.log(data); 
-        this.state.pattern = pattern;
-        this.handleAutomataData(data); 
-      });
+      .then(
+        (data) => {
+          console.log(data);
+          this.setState(
+            (state) => {
+              state.pattern = pattern
+            });
+          this.handleAutomataData(data);
+        },
+        (error) => {
+          console.log("Gecko Server Unavailable.")
+        }
+      );
   }
 
   handleAutomataData(automata) {
@@ -63,7 +71,10 @@ class App extends Component {
       edges: newEdges
     };
 
-    this.setState(state => state.automata = newAutomata);
+    this.setState(
+      (state) => {
+        state.automata = newAutomata
+      });
   }
 
   render() {

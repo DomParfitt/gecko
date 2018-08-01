@@ -4,10 +4,6 @@ import {} from 'd3-graphviz';
 
 class Graph extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return(
             <div id="graphDiv" ref="graphDiv"></div>
@@ -16,7 +12,7 @@ class Graph extends Component {
 
     loadGraph() {
         select('#graphDiv')
-            .graphviz()
+            .graphviz({useWorker: false})
             .height(500)
             .width(500)
             .fit(true)
