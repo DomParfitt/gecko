@@ -1,22 +1,22 @@
 #!/bin/bash 
-gecko_root=$(pwd)
-gecko_path="$HOME/gecko"
+build_path=$(pwd)
+install_path="$HOME/gecko"
 
-mkdir -p $gecko_path/frontend
-echo "Created target directory $gecko_path"
+mkdir -p $install_path/frontend
+echo "Created target directory $install_path"
 
 echo "Building core components"
-for dir in $gecko_root/cmd/*; do
+for dir in $build_path/cmd/*; do
     if [ -d $dir ]; then
-        echo $dir/
         echo "Building ${dir##*/}"
         go build $dir/*.go
     fi
 done
 
-mv $gecko_root/*.exe $gecko_path
+echo "Installing binaries in target directory"
+mv $build_path/*.exe $install_path
 
-cd $gecko_root/frontend
+cd $build_path/frontend
 
 echo "Installing any missing dependencies"
 npm install
@@ -24,4 +24,5 @@ npm install
 echo "Building front end"
 npm run build
 
-cp -r $gecko_root/frontend/build/ $gecko_path/frontend
+echo "Installing resources in target directory"
+cp -r $build_path/frontend/build/ $install_path/frontend
