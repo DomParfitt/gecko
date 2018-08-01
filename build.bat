@@ -8,7 +8,7 @@ echo Created target directory %install_path%
 echo Building core components
 for /R %build_path%\cmd\ %%f in (*.go) do (
     echo Building %%f
-    go.exe build %%f
+    go build %%f
 )
 
 cd %build_path%\frontend
