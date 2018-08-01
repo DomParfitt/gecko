@@ -1,10 +1,9 @@
 package parser
 
 import (
+	"github.com/DomParfitt/gecko/compiler/automata"
 	"reflect"
 	"testing"
-
-	"github.com/DomParfitt/gecko/automata"
 )
 
 func TestElement_Compile(t *testing.T) {

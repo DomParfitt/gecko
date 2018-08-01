@@ -2,10 +2,9 @@ package parser
 
 import (
 	"fmt"
+	"github.com/DomParfitt/gecko/compiler/lexer"
 	"reflect"
 	"testing"
-
-	"github.com/DomParfitt/gecko/lexer"
 )
 
 func TestNew(t *testing.T) {
