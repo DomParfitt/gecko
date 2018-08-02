@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/DomParfitt/gecko/compiler/automata"
+	"github.com/DomParfitt/gecko/core/automata"
 	"reflect"
 	"testing"
 )
