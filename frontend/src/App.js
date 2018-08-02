@@ -36,10 +36,7 @@ class App extends Component {
       .then(
         (data) => {
           console.log(data);
-          this.setState(
-            (state) => {
-              state.pattern = pattern
-            });
+          this.setState(state => state.pattern = pattern);
           this.handleAutomataData(data);
         },
         (error) => {
@@ -71,10 +68,7 @@ class App extends Component {
       edges: newEdges
     };
 
-    this.setState(
-      (state) => {
-        state.automata = newAutomata
-      });
+    this.setState(state => state.automata = newAutomata);
   }
 
   render() {
