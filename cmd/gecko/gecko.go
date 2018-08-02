@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/DomParfitt/gecko/compiler"
+	"github.com/DomParfitt/gecko/core"
 	"os"
 )
 
@@ -11,7 +11,7 @@ func main() {
 	pattern := args[0]
 	input := args[1]
 
-	compiler := compiler.New()
+	compiler := core.New()
 	result, err := compiler.MatchPattern(pattern, input)
 
 	if err != nil {

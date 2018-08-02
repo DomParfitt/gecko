@@ -3,8 +3,8 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/DomParfitt/gecko/compiler"
-	"github.com/DomParfitt/gecko/compiler/automata"
+	"github.com/DomParfitt/gecko/core"
+	"github.com/DomParfitt/gecko/core/automata"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -28,7 +28,7 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 	pattern := vars["pattern"]
 	fmt.Printf("Received request for pattern: %s\n", pattern)
 
-	compiler := compiler.New()
+	compiler := core.New()
 	compiler.Compile(pattern)
 	json, err := marshal(compiler.Exe)
 	if err != nil {

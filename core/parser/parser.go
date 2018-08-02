@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"github.com/DomParfitt/gecko/compiler/lexer"
+	"github.com/DomParfitt/gecko/core/lexer"
 )
 
 //Parser struct

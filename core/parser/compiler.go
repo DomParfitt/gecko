@@ -1,6 +1,6 @@
 package parser
 
-import "github.com/DomParfitt/gecko/compiler/automata"
+import "github.com/DomParfitt/gecko/core/automata"
 
 //Compiler interface for compiling something into a Finite State Machine
 type Compiler interface {

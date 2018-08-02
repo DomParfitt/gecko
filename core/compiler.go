@@ -1,10 +1,10 @@
-package compiler
+package core
 
 import (
 	"fmt"
-	"github.com/DomParfitt/gecko/compiler/automata"
-	"github.com/DomParfitt/gecko/compiler/lexer"
-	"github.com/DomParfitt/gecko/compiler/parser"
+	"github.com/DomParfitt/gecko/core/automata"
+	"github.com/DomParfitt/gecko/core/lexer"
+	"github.com/DomParfitt/gecko/core/parser"
 )
 
 //Compiler wraps the entire process for compiling and matching
