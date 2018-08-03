@@ -53,11 +53,11 @@ func (f *FiniteState) addTerminal(terminal int) {
 func (f *FiniteState) AddTransition(from, to int, chars []rune) {
 
 	//Update the next state indicator if necessary
-	if from >= f.nextState {
+	if from > f.nextState {
 		f.nextState = from + 1
 	}
 
-	if to >= f.nextState {
+	if to > f.nextState {
 		f.nextState = to + 1
 	}
 
@@ -65,6 +65,9 @@ func (f *FiniteState) AddTransition(from, to int, chars []rune) {
 	// then add/update
 	if transitionsFrom, ok := f.Transitions[from]; ok {
 		for _, ch := range chars {
+			if f.isTerminal(transitionsFrom[ch]) {
+				f.addTerminal(to)
+			}
 			transitionsFrom[ch] = to
 		}
 	} else {
@@ -87,7 +90,6 @@ func (f *FiniteState) Append(other *FiniteState) {
 			for _, terminal := range f.TerminalStates {
 				for ch, to := range transition {
 					f.AddTransition(terminal, to+offset, []rune{ch})
-					// }
 				}
 			}
 		} else {
