@@ -54,6 +54,8 @@ func Match(ch rune) Type {
 		return CloseBrace
 	case '*':
 		return Star
+	case '+':
+		return Plus
 	case '^':
 		return Caret
 	case '\\':
