@@ -53,11 +53,11 @@ func (f *FiniteState) addTerminal(terminal int) {
 func (f *FiniteState) AddTransition(from, to int, chars []rune) {
 
 	//Update the next state indicator if necessary
-	if from >= f.nextState {
+	if from > f.nextState {
 		f.nextState = from + 1
 	}
 
-	if to >= f.nextState {
+	if to > f.nextState {
 		f.nextState = to + 1
 	}
 
@@ -117,6 +117,8 @@ func (f *FiniteState) Union(other *FiniteState) {
 	offset := f.nextState
 	f.nextState += other.nextState
 
+	mapping := make(map[int]int)
+
 	//Copy transitions from other
 	for from, transition := range other.Transitions {
 
@@ -126,6 +128,10 @@ func (f *FiniteState) Union(other *FiniteState) {
 		//Anything else gets offset
 		if from != 0 {
 			from += offset
+		}
+
+		if mappedFrom, ok := mapping[from]; ok {
+			from = mappedFrom
 		}
 
 		if isFromTerm {
@@ -138,6 +144,16 @@ func (f *FiniteState) Union(other *FiniteState) {
 
 			if to != 0 {
 				to += offset
+			}
+
+			//Add transition if there isn't one already
+			if existingTo, ok := f.Transitions[from][ch]; ok {
+				mapping[to] = existingTo
+			}
+
+			//If we already have a mapping then use that
+			if mappedTo, ok := mapping[to]; ok {
+				to = mappedTo
 			}
 
 			if isToTerm {
