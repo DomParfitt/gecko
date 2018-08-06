@@ -65,6 +65,9 @@ func (f *FiniteState) AddTransition(from, to int, chars []rune) {
 	// then add/update
 	if transitionsFrom, ok := f.Transitions[from]; ok {
 		for _, ch := range chars {
+			if f.isTerminal(transitionsFrom[ch]) {
+				f.addTerminal(to)
+			}
 			transitionsFrom[ch] = to
 		}
 	} else {
@@ -87,7 +90,6 @@ func (f *FiniteState) Append(other *FiniteState) {
 			for _, terminal := range f.TerminalStates {
 				for ch, to := range transition {
 					f.AddTransition(terminal, to+offset, []rune{ch})
-					// }
 				}
 			}
 		} else {
