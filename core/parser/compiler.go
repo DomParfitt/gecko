@@ -42,7 +42,6 @@ func (e *Element) Compile() *automata.FiniteState {
 func (p *Plus) Compile() *automata.FiniteState {
 	a := p.element.Compile()
 	b := p.element.Compile()
-	a.Loop()
 	b.Loop()
 	a.Append(b)
 	return a
