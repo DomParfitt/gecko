@@ -14,6 +14,7 @@ import (
 func Serve(port string) {
 	router := mux.NewRouter()
 	router.HandleFunc("/pattern/{pattern}", patternHandler)
+	router.HandleFunc("/match/{pattern}/{input}", matchHandler)
 	fmt.Printf("Listening on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
@@ -21,8 +22,6 @@ func Serve(port string) {
 func patternHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	// w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	// w.Header().Set("Access-Control-Allow-Headers", "Accept, Accept-Language, Content-Type")
 
 	vars := mux.Vars(r)
 	pattern := vars["pattern"]
@@ -34,6 +33,28 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "Error")
 	} else {
+		fmt.Fprintf(w, "%s", json)
+	}
+}
+
+func matchHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	vars := mux.Vars(r)
+	pattern := vars["pattern"]
+	input := vars["input"]
+	fmt.Printf("Received request to match input %s against pattern: %s\n", input, pattern)
+
+	compiler := core.New()
+	ok, err := compiler.MatchPattern(pattern, input)
+	if err != nil {
+		fmt.Fprintf(w, "Error")
+	} else {
+		json, err := json.Marshal(&matchResponse{Pattern: pattern, Input: input, Result: ok})
+		if err != nil {
+			fmt.Fprintf(w, "Error")
+		}
+		fmt.Printf("Returning result %s", json)
 		fmt.Fprintf(w, "%s", json)
 	}
 }
@@ -83,4 +104,10 @@ type jsonAutomata struct {
 	TerminalStates []int
 	States         []int
 	Transitions    map[int]map[string]int
+}
+
+type matchResponse struct {
+	Pattern string
+	Input   string
+	Result  bool
 }
