@@ -10,6 +10,7 @@ class App extends Component {
     this.state = {
       input: "",
       pattern: "abc",
+      matches: false,
       ast: {},
       automata: {
         currentNode: 0,
@@ -29,9 +30,9 @@ class App extends Component {
     this.handleAutomataData = this.handleAutomataData.bind(this);
   }
 
-  handleClick(pattern) {
+  requestAutomata(pattern) {
     console.log(pattern);
-    fetch("http://localhost:8080/pattern/" + pattern)
+    fetch("http://localhost:8080/pattern/" + encodeURI(pattern))
       .then((resp) => resp.json())
       .then(
         (data) => {
@@ -43,6 +44,23 @@ class App extends Component {
           console.log("Gecko Server Unavailable.")
         }
       );
+  }
+
+  matchPattern(pattern, input) {
+    fetch("http://localhost:8080/match/" + encodeURI(pattern) + "/" + encodeURI(input))
+    .then((resp) => resp.json())
+    .then(
+      (data) => {
+        console.log(data);
+        this.setState({
+          input: input,
+          matches: data.Result
+        });
+      },
+      (error) => {
+        console.log("Gecko Server Unavailable.")
+      }
+    );
   }
 
   handleAutomataData(automata) {
@@ -76,15 +94,16 @@ class App extends Component {
       <div className="App">
         <h1>Welcome to Gecko!</h1>
         <div>
-          <input ref="patternBox" type="text" placeholder="Enter a pattern" onChange={() => this.handleClick(this.refs.patternBox.value)}></input>
-          <button onClick={() => this.handleClick(this.refs.patternBox.value)}>Enter</button>
+          <input ref="patternBox" type="text" placeholder="Enter a pattern" onChange={() => this.requestAutomata(this.refs.patternBox.value)}></input>
+          <button onClick={() => this.requestAutomata(this.refs.patternBox.value)}>Enter</button>
         </div>
         <div>
           <input ref="inputBox" type="text" placeholder="Enter an input" onChange={() => console.log("not yet implemented")}></input>
-          <button onClick={() => console.log("not yet implemented")}>Enter</button>
+          <button onClick={() => this.matchPattern(this.refs.patternBox.value, this.refs.inputBox.value)}>Enter</button>
         </div>
         <div>Pattern: {this.state.pattern}</div>
         <div>Input: {this.state.input}</div>
+        <div>Matches: {this.state.matches.toString()}</div>
         <Graph currentNode={this.state.automata.currentNode} nodes={this.state.automata.nodes} edges={this.state.automata.edges} />
       </div>
     );
