@@ -163,6 +163,18 @@ func (f *FiniteState) Union(other *FiniteState) {
 			}
 
 			f.AddTransition(from, to, []rune{ch})
+
+			//Handle any internal loops by adding an additional state for them
+			if existingTransitions, ok := f.Transitions[from]; ok {
+				for over, existingTo := range existingTransitions {
+					if from == existingTo {
+						newState := f.nextState + 1
+						f.AddTransition(from, newState, []rune{over})
+						f.AddTransition(newState, newState, []rune{over})
+						f.addTerminal(newState)
+					}
+				}
+			}
 		}
 	}
 }
