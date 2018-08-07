@@ -244,6 +244,18 @@ func (f *FiniteState) Execute(input string) bool {
 	return f.isTerminal(f.CurrentState)
 }
 
+func (f *FiniteState) ExecuteStep(input string) (bool, []int) {
+	f.CurrentState = 0
+	steps := []int{0}
+	for _, ch := range input {
+		if !f.consume(ch) {
+			return false, []int{}
+		}
+		steps = append(steps, f.CurrentState)
+	}
+	return f.isTerminal(f.CurrentState), steps
+}
+
 // Consume a character and update the state of the
 // automata as required.
 // Returns a bool indicating success or failure, where

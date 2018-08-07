@@ -47,10 +47,11 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 
 	compiler := core.New()
 	ok, err := compiler.MatchPattern(pattern, input)
+	ok, steps := compiler.Exe.ExecuteStep(input)
 	if err != nil {
 		fmt.Fprintf(w, "Error")
 	} else {
-		json, err := json.Marshal(&matchResponse{Pattern: pattern, Input: input, Result: ok})
+		json, err := json.Marshal(&matchResponse{Pattern: pattern, Input: input, Result: ok, Steps: steps})
 		if err != nil {
 			fmt.Fprintf(w, "Error")
 		}
@@ -110,4 +111,5 @@ type matchResponse struct {
 	Pattern string
 	Input   string
 	Result  bool
+	Steps   []int
 }
