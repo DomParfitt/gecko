@@ -71,6 +71,10 @@ func (b *BasicExpr) Compile() *automata.FiniteState {
 		return b.plus.Compile()
 	}
 
+	if b.question != nil {
+		return b.question.Compile()
+	}
+
 	if b.element != nil {
 		return b.element.Compile()
 	}

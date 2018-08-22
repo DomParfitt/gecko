@@ -31,9 +31,10 @@ type Concatenation struct {
 
 //BasicExpr ::= Star | Plus | Element
 type BasicExpr struct {
-	star    *Star
-	plus    *Plus
-	element *Element
+	star     *Star
+	plus     *Plus
+	question *Question
+	element  *Element
 }
 
 //Star ::= Element "*"

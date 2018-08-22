@@ -211,6 +211,12 @@ func (p *Parser) basicExpr() (*BasicExpr, bool) {
 	}
 
 	reset()
+	question, ok := p.question()
+	if ok {
+		return &BasicExpr{question: question}, true
+	}
+
+	reset()
 	base, ok := p.base()
 	if ok {
 		return &BasicExpr{element: base}, true
