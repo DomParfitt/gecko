@@ -181,6 +181,22 @@ func (p *Parser) plus() (*Plus, bool) {
 	return &Plus{base}, true
 }
 
+func (p *Parser) question() (*Question, bool) {
+	reset := p.reset()
+
+	base, ok := p.base()
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.Question) {
+		return nil, false
+	}
+
+	return &Question{base}, true
+}
+
 func (p *Parser) basicExpr() (*BasicExpr, bool) {
 	reset := p.reset()
 	star, ok := p.star()

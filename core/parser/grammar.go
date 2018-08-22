@@ -46,6 +46,11 @@ type Plus struct {
 	element *Element
 }
 
+//Question ::= Element "?"
+type Question struct {
+	element *Element
+}
+
 //Element ::= Character | Group | Set
 type Element struct {
 	// Value     rune

@@ -20,6 +20,7 @@ const (
 	CloseBrace
 	Star
 	Plus
+	Question
 	Caret
 	Escape
 	Pipe
@@ -56,6 +57,8 @@ func Match(ch rune) Type {
 		return Star
 	case '+':
 		return Plus
+	case '?':
+		return Question
 	case '^':
 		return Caret
 	case '\\':

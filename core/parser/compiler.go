@@ -54,6 +54,13 @@ func (s *Star) Compile() *automata.FiniteState {
 	return a
 }
 
+//Compile a Question into a Finite State Machine
+func (q *Question) Compile() *automata.FiniteState {
+	a := q.element.Compile()
+	a.TerminalStates = append(a.TerminalStates, 0)
+	return a
+}
+
 //Compile a BasicExpr into a Finite State Machine
 func (b *BasicExpr) Compile() *automata.FiniteState {
 	if b.star != nil {
