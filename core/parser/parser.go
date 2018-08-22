@@ -123,7 +123,7 @@ func (p *Parser) escape() (*Escape, bool) {
 
 }
 
-func (p *Parser) base() (*Element, bool) {
+func (p *Parser) element() (*Element, bool) {
 	reset := p.reset()
 
 	group, ok := p.group()
@@ -152,7 +152,7 @@ func (p *Parser) base() (*Element, bool) {
 func (p *Parser) star() (*Star, bool) {
 	reset := p.reset()
 
-	base, ok := p.base()
+	base, ok := p.element()
 	if !ok {
 		reset()
 		return nil, false
@@ -168,7 +168,7 @@ func (p *Parser) star() (*Star, bool) {
 func (p *Parser) plus() (*Plus, bool) {
 	reset := p.reset()
 
-	base, ok := p.base()
+	base, ok := p.element()
 	if !ok {
 		reset()
 		return nil, false
@@ -184,7 +184,7 @@ func (p *Parser) plus() (*Plus, bool) {
 func (p *Parser) question() (*Question, bool) {
 	reset := p.reset()
 
-	base, ok := p.base()
+	base, ok := p.element()
 	if !ok {
 		reset()
 		return nil, false
@@ -217,7 +217,7 @@ func (p *Parser) basicExpr() (*BasicExpr, bool) {
 	}
 
 	reset()
-	base, ok := p.base()
+	base, ok := p.element()
 	if ok {
 		return &BasicExpr{element: base}, true
 	}
