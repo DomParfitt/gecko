@@ -1,9 +1,29 @@
 # Gecko
-Gecko is a RegEx engine implemented in Go. The grammar implemented is currently a subset of Perl's RegEx grammar.
+Gecko is a RegEx engine implemented in Go. The grammar implemented is currently a subset of a full RegEx grammar as specified below.
 
-A specification of the grammar used, in Backus-Naur Form, can be found here : http://www.cs.sfu.ca/~cameron/Teaching/384/99-3/regexp-plg.html.  
+## Grammar Specification
+```
+RegExpr         ::= Union | SimpleExpr
+Group           ::= (RegExpr)
+Union           ::= RegExpr "|" SimpleExpr
+SimpleExpr      ::= Concatenation | BasicExpr
+Concatenation   ::= SimpleExpr BasicExpr
+BasicExpr       ::= Star | Plus | Element
+Star            ::= Element "*"
+Plus            ::= Element "+"
+Question        ::= Element "?"
+Element         ::= Character | Group | Set
+Escape          ::= "\" <literal character>
+Character       ::= Escape | <literal character>
+Set             ::= PositiveSet | NegativeSet
+PositiveSet     ::= "[" SetItems "]"
+NegativeSet     ::= "[^" SetItems "]"
+SetItems        ::= SetItem SetItems
+SetItem         ::= Range | Character
+Range           ::= Character "-" Character
+```
 
-## Structure
+## Project Structure
 
 ### Core
 The core package contains the code for the engine itself in the form of a lexer, parser and compiler. It also provides a struct `Compiler` which acts as a simple API for the engine.
