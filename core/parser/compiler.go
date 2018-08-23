@@ -107,6 +107,10 @@ func (e *Element) Compile() *automata.FiniteState {
 		return e.character.Compile()
 	}
 
+	if e.escape != nil {
+		return e.escape.Compile()
+	}
+
 	panic("invalid")
 }
 

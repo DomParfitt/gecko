@@ -262,6 +262,13 @@ func (p *Parser) element() (*Element, bool) {
 	}
 
 	reset()
+
+	escape, ok := p.escape()
+	if ok {
+		return &Element{escape: escape}, true
+	}
+
+	reset()
 	return nil, false
 }
 
@@ -294,7 +301,6 @@ func (p *Parser) escape() (*Escape, bool) {
 	}
 
 	character, ok := p.character()
-
 	if !ok {
 		reset()
 		return nil, false

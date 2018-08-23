@@ -53,6 +53,7 @@ type Element struct {
 	character *Character
 	group     *Group
 	set       *Set
+	escape    *Escape
 }
 
 //Group ::= (RegExpr)
