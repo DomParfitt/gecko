@@ -9,15 +9,11 @@ type Compiler interface {
 
 //Compile an Escape into a Finite State Machine
 func (e *Escape) Compile() *automata.FiniteState {
-	return automata.Create([]rune{e.Value})
+	return e.character.Compile()
 }
 
 //Compile a Character into a Finite State Machine
 func (c *Character) Compile() *automata.FiniteState {
-	if c.escape != nil {
-		return c.escape.Compile()
-	}
-
 	return automata.Create([]rune{c.Value})
 }
 

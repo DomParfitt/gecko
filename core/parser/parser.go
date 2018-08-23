@@ -293,14 +293,14 @@ func (p *Parser) escape() (*Escape, bool) {
 		return nil, false
 	}
 
-	token, ok := p.consume()
+	character, ok := p.character()
 
 	if !ok {
 		reset()
 		return nil, false
 	}
 
-	return &Escape{token.Value}, true
+	return &Escape{character}, true
 
 }
 
@@ -436,12 +436,6 @@ func (p *Parser) rangeExpr() (*Range, bool) {
 func (p *Parser) character() (*Character, bool) {
 	reset := p.reset()
 
-	escape, ok := p.escape()
-	if ok {
-		return &Character{escape: escape}, true
-	}
-
-	reset()
 	token, ok := p.consume()
 
 	if !ok {

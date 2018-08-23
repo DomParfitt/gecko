@@ -62,7 +62,7 @@ type Group struct {
 
 //Escape ::= "\" Character
 type Escape struct {
-	Value rune
+	character *Character
 }
 
 //Set ::= PositiveSet | NegativeSet
@@ -101,6 +101,5 @@ type Range struct {
 
 //Character ::= literal character
 type Character struct {
-	escape *Escape
-	Value  rune
+	Value rune
 }
