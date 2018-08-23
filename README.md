@@ -4,7 +4,6 @@ Gecko is a RegEx engine implemented in Go. The grammar implemented is currently 
 ## Grammar Specification
 ```
 RegExpr         ::= Union | SimpleExpr
-Group           ::= "(" RegExpr ")"
 Union           ::= SimpleExpr "|" RegExpr
 SimpleExpr      ::= Concatenation | BasicExpr
 Concatenation   ::= BasicExpr SimpleExpr
@@ -13,14 +12,15 @@ Star            ::= Element "*"
 Plus            ::= Element "+"
 Question        ::= Element "?"
 Element         ::= Character | Group | Set
+Group           ::= "(" RegExpr ")"
 Escape          ::= "\" <literal character>
-Character       ::= Escape | <literal character>
 Set             ::= PositiveSet | NegativeSet
 PositiveSet     ::= "[" SetItems "]"
 NegativeSet     ::= "[^" SetItems "]"
 SetItems        ::= SetItem SetItems
 SetItem         ::= Range | Character
 Range           ::= Character "-" Character
+Character       ::= Escape | <literal character>
 ```
 
 ## Project Structure

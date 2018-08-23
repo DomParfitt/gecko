@@ -81,71 +81,113 @@ func (p *Parser) reset() func() {
 
 }
 
-func (p *Parser) character() (*Character, bool) {
+func (p *Parser) regExpr() (*RegExpr, bool) {
+
 	reset := p.reset()
 
-	escape, ok := p.escape()
+	union, ok := p.union()
 	if ok {
-		return &Character{escape: escape}, true
+		return &RegExpr{union: union}, true
 	}
 
 	reset()
-	token, ok := p.consume()
+
+	simple, ok := p.simpleExpr()
+	if ok {
+		return &RegExpr{simple: simple}, true
+	}
+
+	reset()
+	return nil, false
+}
+
+func (p *Parser) union() (*Union, bool) {
+
+	reset := p.reset()
+
+	simple, ok := p.simpleExpr()
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.Pipe) {
+		return nil, false
+	}
+
+	regex, ok := p.regExpr()
 
 	if !ok {
 		reset()
 		return nil, false
 	}
 
-	if token.Type != lexer.Character {
-		reset()
-		return nil, false
-	}
-
-	return &Character{Value: token.Value}, true
+	return &Union{regex, simple}, true
 }
 
-func (p *Parser) escape() (*Escape, bool) {
+func (p *Parser) simpleExpr() (*SimpleExpr, bool) {
 	reset := p.reset()
-
-	if !p.consumeAndMatch(lexer.Escape) {
-		return nil, false
+	concatenation, ok := p.concatenation()
+	if ok {
+		return &SimpleExpr{concatenation: concatenation}, true
 	}
 
-	token, ok := p.consume()
+	reset()
+	basic, ok := p.basicExpr()
+	if ok {
+		return &SimpleExpr{basic: basic}, true
+	}
+
+	reset()
+	return nil, false
+}
+
+func (p *Parser) concatenation() (*Concatenation, bool) {
+	reset := p.reset()
+
+	basic, ok := p.basicExpr()
 
 	if !ok {
 		reset()
 		return nil, false
 	}
 
-	return &Escape{token.Value}, true
+	simple, ok := p.simpleExpr()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	return &Concatenation{simple, basic}, true
 
 }
 
-func (p *Parser) element() (*Element, bool) {
+func (p *Parser) basicExpr() (*BasicExpr, bool) {
 	reset := p.reset()
-
-	group, ok := p.group()
+	star, ok := p.star()
 	if ok {
-		return &Element{group: group}, true
+		return &BasicExpr{star: star}, true
 	}
 
 	reset()
-
-	set, ok := p.set()
+	plus, ok := p.plus()
 	if ok {
-		return &Element{set: set}, true
+		return &BasicExpr{plus: plus}, true
 	}
 
 	reset()
-
-	character, ok := p.character()
+	question, ok := p.question()
 	if ok {
-		return &Element{character: character}, true
+		return &BasicExpr{question: question}, true
 	}
 
 	reset()
+	base, ok := p.element()
+	if ok {
+		return &BasicExpr{element: base}, true
+	}
+
 	return nil, false
 }
 
@@ -197,94 +239,30 @@ func (p *Parser) question() (*Question, bool) {
 	return &Question{base}, true
 }
 
-func (p *Parser) basicExpr() (*BasicExpr, bool) {
-	reset := p.reset()
-	star, ok := p.star()
-	if ok {
-		return &BasicExpr{star: star}, true
-	}
-
-	reset()
-	plus, ok := p.plus()
-	if ok {
-		return &BasicExpr{plus: plus}, true
-	}
-
-	reset()
-	question, ok := p.question()
-	if ok {
-		return &BasicExpr{question: question}, true
-	}
-
-	reset()
-	base, ok := p.element()
-	if ok {
-		return &BasicExpr{element: base}, true
-	}
-
-	return nil, false
-}
-
-func (p *Parser) concatenation() (*Concatenation, bool) {
+func (p *Parser) element() (*Element, bool) {
 	reset := p.reset()
 
-	basic, ok := p.basicExpr()
-
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	simple, ok := p.simpleExpr()
-
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	return &Concatenation{simple, basic}, true
-
-}
-
-func (p *Parser) simpleExpr() (*SimpleExpr, bool) {
-	reset := p.reset()
-	concatenation, ok := p.concatenation()
+	group, ok := p.group()
 	if ok {
-		return &SimpleExpr{concatenation: concatenation}, true
+		return &Element{group: group}, true
 	}
 
 	reset()
-	basic, ok := p.basicExpr()
+
+	set, ok := p.set()
 	if ok {
-		return &SimpleExpr{basic: basic}, true
+		return &Element{set: set}, true
+	}
+
+	reset()
+
+	character, ok := p.character()
+	if ok {
+		return &Element{character: character}, true
 	}
 
 	reset()
 	return nil, false
-}
-
-func (p *Parser) union() (*Union, bool) {
-
-	reset := p.reset()
-
-	simple, ok := p.simpleExpr()
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	if !p.consumeAndMatch(lexer.Pipe) {
-		return nil, false
-	}
-
-	regex, ok := p.regExpr()
-
-	if !ok {
-		reset()
-		return nil, false
-	}
-
-	return &Union{regex, simple}, true
 }
 
 func (p *Parser) group() (*Group, bool) {
@@ -308,24 +286,22 @@ func (p *Parser) group() (*Group, bool) {
 	return &Group{regex}, true
 }
 
-func (p *Parser) regExpr() (*RegExpr, bool) {
-
+func (p *Parser) escape() (*Escape, bool) {
 	reset := p.reset()
 
-	union, ok := p.union()
-	if ok {
-		return &RegExpr{union: union}, true
+	if !p.consumeAndMatch(lexer.Escape) {
+		return nil, false
 	}
 
-	reset()
+	token, ok := p.consume()
 
-	simple, ok := p.simpleExpr()
-	if ok {
-		return &RegExpr{simple: simple}, true
+	if !ok {
+		reset()
+		return nil, false
 	}
 
-	reset()
-	return nil, false
+	return &Escape{token.Value}, true
+
 }
 
 func (p *Parser) set() (*Set, bool) {
@@ -455,4 +431,28 @@ func (p *Parser) rangeExpr() (*Range, bool) {
 
 	return &Range{start, end}, true
 
+}
+
+func (p *Parser) character() (*Character, bool) {
+	reset := p.reset()
+
+	escape, ok := p.escape()
+	if ok {
+		return &Character{escape: escape}, true
+	}
+
+	reset()
+	token, ok := p.consume()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if token.Type != lexer.Character {
+		reset()
+		return nil, false
+	}
+
+	return &Character{Value: token.Value}, true
 }
