@@ -21,6 +21,7 @@ SetItems        ::= SetItem SetItems
 SetItem         ::= Range | Character
 Range           ::= Character "-" Character
 Character       ::= <literal character>
+Base            ::= <literal character>
 ```
 
 ## Project Structure

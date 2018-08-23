@@ -121,7 +121,8 @@ func (g *Group) Compile() *automata.FiniteState {
 
 //Compile an Escape into a Finite State Machine
 func (e *Escape) Compile() *automata.FiniteState {
-	return e.character.Compile()
+	// return e.character.Compile()
+	return e.base.Compile()
 }
 
 //Compile a Set into a Finite State Machine
@@ -177,7 +178,7 @@ func (s *SetItem) Compile() *automata.FiniteState {
 //Compile a Range into a Finite State Machine
 func (r *Range) Compile() *automata.FiniteState {
 	chars := []rune{}
-	for i := r.start.Value; i <= r.end.Value; i++ {
+	for i := r.start.base.Value; i <= r.end.base.Value; i++ {
 		chars = append(chars, i)
 	}
 
@@ -186,7 +187,13 @@ func (r *Range) Compile() *automata.FiniteState {
 
 //Compile a Character into a Finite State Machine
 func (c *Character) Compile() *automata.FiniteState {
-	return automata.Create([]rune{c.Value})
+	// return automata.Create([]rune{c.Value})
+	return c.base.Compile()
+}
+
+//Compile a Base into a Finite State Machine
+func (b *Base) Compile() *automata.FiniteState {
+	return automata.Create([]rune{b.Value})
 }
 
 // Compile something implementing the Compiler interface and return the result

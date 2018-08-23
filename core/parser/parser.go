@@ -300,13 +300,13 @@ func (p *Parser) escape() (*Escape, bool) {
 		return nil, false
 	}
 
-	character, ok := p.character()
+	base, ok := p.base()
 	if !ok {
 		reset()
 		return nil, false
 	}
 
-	return &Escape{character}, true
+	return &Escape{base}, true
 
 }
 
@@ -442,6 +442,24 @@ func (p *Parser) rangeExpr() (*Range, bool) {
 func (p *Parser) character() (*Character, bool) {
 	reset := p.reset()
 
+	base, ok := p.base()
+
+	if !ok {
+		reset()
+		return nil, false
+	}
+
+	if base.tokenType != lexer.Character {
+		reset()
+		return nil, false
+	}
+
+	return &Character{base}, true
+}
+
+func (p *Parser) base() (*Base, bool) {
+	reset := p.reset()
+
 	token, ok := p.consume()
 
 	if !ok {
@@ -449,10 +467,5 @@ func (p *Parser) character() (*Character, bool) {
 		return nil, false
 	}
 
-	if token.Type != lexer.Character {
-		reset()
-		return nil, false
-	}
-
-	return &Character{Value: token.Value}, true
+	return &Base{Value: token.Value, tokenType: token.Type}, true
 }

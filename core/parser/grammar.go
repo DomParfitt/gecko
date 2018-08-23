@@ -1,5 +1,9 @@
 package parser
 
+import (
+	"github.com/DomParfitt/gecko/core/lexer"
+)
+
 //RegExpr ::= Union | SimpleExpr
 type RegExpr struct {
 	union  *Union
@@ -63,7 +67,8 @@ type Group struct {
 
 //Escape ::= "\" Character
 type Escape struct {
-	character *Character
+	// character *Character
+	base *Base
 }
 
 //Set ::= PositiveSet | NegativeSet
@@ -102,5 +107,12 @@ type Range struct {
 
 //Character ::= literal character
 type Character struct {
-	Value rune
+	// Value rune
+	base *Base
+}
+
+//Base ::= <literal character>
+type Base struct {
+	tokenType lexer.Type
+	Value     rune
 }
