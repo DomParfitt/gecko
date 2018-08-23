@@ -6,11 +6,6 @@ type RegExpr struct {
 	simple *SimpleExpr
 }
 
-//Group ::= (RegExpr)
-type Group struct {
-	regExpr *RegExpr
-}
-
 //Union ::= RegExpr "|" SimpleExpr
 type Union struct {
 	regex  *RegExpr
@@ -60,15 +55,14 @@ type Element struct {
 	set       *Set
 }
 
+//Group ::= (RegExpr)
+type Group struct {
+	regExpr *RegExpr
+}
+
 //Escape ::= "\" Character
 type Escape struct {
 	Value rune
-}
-
-//Character ::= literal character
-type Character struct {
-	escape *Escape
-	Value  rune
 }
 
 //Set ::= PositiveSet | NegativeSet
@@ -103,4 +97,10 @@ type SetItem struct {
 type Range struct {
 	start *Character
 	end   *Character
+}
+
+//Character ::= literal character
+type Character struct {
+	escape *Escape
+	Value  rune
 }
