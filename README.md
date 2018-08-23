@@ -4,7 +4,7 @@ Gecko is a RegEx engine implemented in Go. The grammar implemented is currently 
 ## Grammar Specification
 ```
 RegExpr         ::= Union | SimpleExpr
-Group           ::= (RegExpr)
+Group           ::= "(" RegExpr ")"
 Union           ::= SimpleExpr "|" RegExpr
 SimpleExpr      ::= Concatenation | BasicExpr
 Concatenation   ::= BasicExpr SimpleExpr
