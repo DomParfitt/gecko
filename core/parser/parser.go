@@ -50,7 +50,6 @@ func (p *Parser) regExpr() (*RegExpr, bool) {
 		return &RegExpr{simple: simple}, true
 	}
 
-	reset()
 	return nil, false
 }
 
