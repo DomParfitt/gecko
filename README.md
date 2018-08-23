@@ -13,14 +13,14 @@ Plus            ::= Element "+"
 Question        ::= Element "?"
 Element         ::= Character | Group | Set
 Group           ::= "(" RegExpr ")"
-Escape          ::= "\" <literal character>
+Escape          ::= "\" Character
 Set             ::= PositiveSet | NegativeSet
 PositiveSet     ::= "[" SetItems "]"
 NegativeSet     ::= "[^" SetItems "]"
 SetItems        ::= SetItem SetItems
 SetItem         ::= Range | Character
 Range           ::= Character "-" Character
-Character       ::= Escape | <literal character>
+Character       ::= <literal character>
 ```
 
 ## Project Structure
