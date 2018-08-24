@@ -35,7 +35,7 @@ type Token struct {
 }
 
 func (t Token) String() string {
-	return fmt.Sprintf("[%s]: %c", t.Type, t.Value)
+	return fmt.Sprintf("[%s]: '%c'", t.Type, t.Value)
 }
 
 // Match the provided character to a Type of Token.

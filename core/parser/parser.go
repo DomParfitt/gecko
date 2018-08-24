@@ -26,8 +26,12 @@ func (p *Parser) Parse(tokens []lexer.Token) (*RegExpr, error) {
 
 	regExpr, ok := p.regExpr()
 
-	if !ok || p.cursor != len(p.tokens) {
-		return nil, fmt.Errorf("the token stream could not be parsed")
+	if !ok {
+		return nil, fmt.Errorf("the full token stream could not be parsed. Invalid token stream beginning at column %d with token %s", 0, p.tokens[0])
+	}
+
+	if p.cursor != len(p.tokens) {
+		return nil, fmt.Errorf("the full token stream could not be parsed. Invalid token stream beginning at column %d with token %s", p.cursor, p.tokens[p.cursor])
 	}
 
 	return regExpr, nil
