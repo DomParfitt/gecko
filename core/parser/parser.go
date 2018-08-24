@@ -26,7 +26,7 @@ func (p *Parser) Parse(tokens []lexer.Token) (*RegExpr, error) {
 
 	regExpr, ok := p.regExpr()
 
-	if !ok {
+	if !ok || p.cursor != len(p.tokens) {
 		return nil, fmt.Errorf("the token stream could not be parsed")
 	}
 
