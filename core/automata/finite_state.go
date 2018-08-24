@@ -1,3 +1,5 @@
+//Package automata contains implementations of the automata that represent the final
+//stage of parsing and compiling a pattern.
 package automata
 
 import (

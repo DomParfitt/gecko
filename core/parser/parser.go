@@ -1,3 +1,6 @@
+//Package parser contains the implementation of Gecko's parser, data structures to
+//represent the grammar as nodes of an AST and functionality to compile each of the
+//AST nodes into an executable automata
 package parser
 
 import (

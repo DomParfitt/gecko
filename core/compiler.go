@@ -1,3 +1,5 @@
+//Package core provides the core functionality of the Gecko RegEx engine
+//as well as providing an easy-to-use API in the form of the Compiler struct
 package core
 
 import (

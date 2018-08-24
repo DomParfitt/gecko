@@ -27,7 +27,7 @@ const (
 	Dash
 )
 
-//Token represents a lexed charcter. Contains the
+//Token represents a lexed character. Contains the
 // type of the token as well as its raw value
 type Token struct {
 	Type  Type
