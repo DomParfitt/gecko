@@ -1,6 +1,24 @@
 # Gecko
 Gecko is a RegEx engine implemented in Go. The grammar implemented is currently a subset of a full RegEx grammar as specified below.
 
+## Lexical Specification
+```
+OpenParen       ::= '('
+CloseParen      ::= ')'
+OpenBracket     ::= '['
+CloseBracket    ::= ']'
+OpenBrace       ::= '{'
+CloseBrace      ::= '}'
+Star            ::= '*'
+Plus            ::= '+'
+Question        ::= '?'
+Caret           ::= '^'
+Escape          ::= '\'
+Pipe            ::= '|'
+Dash            ::= '-'
+Character       ::= any character not defined above
+```
+
 ## Grammar Specification
 ```
 RegExpr         ::= Union | SimpleExpr
@@ -20,8 +38,8 @@ NegativeSet     ::= "[^" SetItems "]"
 SetItems        ::= SetItem SetItems
 SetItem         ::= Range | Character
 Range           ::= Character "-" Character
-Character       ::= <literal character>
-Base            ::= <literal character>
+Character       ::= <lexical Character>
+Base            ::= <any literal token>
 ```
 
 ## Project Structure
