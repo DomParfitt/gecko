@@ -4,7 +4,7 @@ import { IEdge, INode } from 'src/automata/Automata';
 
 class Graph extends React.Component<IGraphProps, any> {
 
-    public render() {
+    public render(): JSX.Element {
         return(
             <div id="graphDiv" />
         );
@@ -29,7 +29,7 @@ class Graph extends React.Component<IGraphProps, any> {
             .renderDot(this.generateDot());
     }
 
-    private generateDot() {
+    private generateDot(): string {
         let dot = 'digraph { rankdir="LR";\n';
 
         for(const node of this.props.nodes) {

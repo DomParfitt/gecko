@@ -29,7 +29,7 @@ class App extends React.Component<any, IAppState> {
 
   }
 
-  public render() {
+  public render(): JSX.Element {
     return (
       <div className="App">
         <h1>Welcome to Gecko!</h1>
@@ -37,8 +37,9 @@ class App extends React.Component<any, IAppState> {
           <input type="text" placeholder="Enter a pattern" onChange={
             // tslint:disable-next-line:jsx-no-lambda
             (event) => {
-              this.setState({'pattern': event.target.value})
-              // this.requestAutomata(this.state.pattern);
+              const pattern = event.target.value;
+              this.setState({'pattern': pattern});
+              this.requestAutomata(pattern);
             }
           }/>
           <button onClick={
@@ -67,7 +68,6 @@ class App extends React.Component<any, IAppState> {
         (data) => {
           // tslint:disable-next-line:no-console
           console.log(data.Transitions);
-          this.setState({'pattern': pattern});
           this.handleAutomataData(data);
         },
         (error) => {
