@@ -1,7 +1,6 @@
 import { graphviz } from 'd3-graphviz';
 import * as React from 'react';
-import { IEdge } from 'src/automata/Edge';
-import { INode } from 'src/automata/Node';
+import { IEdge, INode } from 'src/automata/Automata';
 
 class Graph extends React.Component<IGraphProps, any> {
 
