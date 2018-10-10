@@ -1,4 +1,5 @@
 import * as React from 'react';
+import './App.css'
 import { IAutomata, isAutomata } from './automata/Automata';
 import Graph from './graph/Graph';
 
