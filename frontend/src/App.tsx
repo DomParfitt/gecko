@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IAutomata } from './automata/Automata';
+import { IAutomata, isAutomata } from './automata/Automata';
 import Graph from './graph/Graph';
 
 class App extends React.Component<any, IAppState> {
@@ -68,7 +68,9 @@ class App extends React.Component<any, IAppState> {
         (data) => {
           // tslint:disable-next-line:no-console
           console.log(data);
-          this.handleAutomataData(data);
+          if (isAutomata(data)) {
+            this.handleAutomataData(data);
+          }
         },
         (error) => {
           // tslint:disable-next-line:no-console
