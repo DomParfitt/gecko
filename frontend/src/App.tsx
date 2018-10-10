@@ -27,7 +27,6 @@ class App extends React.Component<any, IAppState> {
       pattern: "abc",
     };
 
-    // this.handleAutomataData = this.handleAutomataData.bind(this);
   }
 
   public render() {
@@ -39,7 +38,7 @@ class App extends React.Component<any, IAppState> {
             // tslint:disable-next-line:jsx-no-lambda
             (event) => {
               this.setState({'pattern': event.target.value})
-              this.requestAutomata(this.state.pattern);
+              // this.requestAutomata(this.state.pattern);
             }
           }/>
           <button onClick={
@@ -66,6 +65,8 @@ class App extends React.Component<any, IAppState> {
       .then((resp) => resp.json())
       .then(
         (data) => {
+          // tslint:disable-next-line:no-console
+          console.log(data.Transitions);
           this.setState({'pattern': pattern});
           this.handleAutomataData(data);
         },
