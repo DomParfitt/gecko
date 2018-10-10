@@ -67,7 +67,7 @@ class App extends React.Component<any, IAppState> {
       .then(
         (data) => {
           // tslint:disable-next-line:no-console
-          console.log(data.Transitions);
+          console.log(data);
           this.handleAutomataData(data);
         },
         (error) => {
@@ -77,32 +77,9 @@ class App extends React.Component<any, IAppState> {
       );
   }
 
-  private handleAutomataData(automata: any) {
-
-    const newNodes = [];
-    for (const state of automata.States) {
-      const terminal = automata.TerminalStates.includes(state);
-      newNodes.push({ id: state, isTerminal: terminal });
-    }
-
-    const newEdges = [];
-    const transitions = automata.Transitions;
-    // tslint:disable-next-line:forin
-    for (const from in transitions) {
-      // tslint:disable-next-line:forin
-      for (const over in transitions[from]) {
-        const to = transitions[from][over];
-        newEdges.push({ 'from': +from, 'to': +to, 'label': over });
-      }
-    }
-
-    const newAutomata: IAutomata = {
-      currentNode: automata.CurrentState,
-      edges: newEdges,
-      nodes: newNodes.sort(),
-    };
-
-    this.setState({automata: newAutomata});
+  private handleAutomataData(automata: IAutomata) {
+    automata.nodes.sort();
+    this.setState({"automata": automata});
   }
 
 }
