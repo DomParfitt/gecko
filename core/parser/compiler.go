@@ -1,3 +1,5 @@
+// Package parser contains Gecko's recursive-descent parser, data structures representing
+// the grammar productions and functions for compiling the AST to a Finite State Machine
 package parser
 
 import "github.com/DomParfitt/gecko/core/automata"
