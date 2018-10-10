@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/DomParfitt/gecko/core"
 	"github.com/DomParfitt/gecko/core/automata"
+	"github.com/DomParfitt/gecko/server/api"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -29,7 +30,8 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 
 	compiler := core.New()
 	compiler.Compile(pattern)
-	json, err := marshal(compiler.Exe)
+	json, err := marshall(compiler.Exe)
+	fmt.Printf("%s", json)
 	if err != nil {
 		fmt.Fprintf(w, "Error")
 	} else {
@@ -86,6 +88,37 @@ func marshal(exe *automata.FiniteState) ([]byte, error) {
 
 	a.States = states
 	a.Transitions = transitions
+
+	return json.Marshal(a)
+}
+
+func marshall(exe *automata.FiniteState) ([]byte, error) {
+	a := &api.Automata{CurrentNode: 0}
+
+	states := []int{}
+	edges := []api.Edge{}
+	for from, transition := range exe.Transitions {
+		if !contains(states, from) {
+			states = append(states, from)
+		}
+		for ch, to := range transition {
+			if !contains(states, to) {
+				states = append(states, to)
+			}
+
+			edge := api.Edge{From: from, To: to, Label: string(ch)}
+			edges = append(edges, edge)
+		}
+	}
+
+	nodes := []api.Node{}
+	for _, state := range states {
+		node := api.Node{ID: state, IsTerminal: contains(exe.TerminalStates, state)}
+		nodes = append(nodes, node)
+	}
+
+	a.Nodes = nodes
+	a.Edges = edges
 
 	return json.Marshal(a)
 }
