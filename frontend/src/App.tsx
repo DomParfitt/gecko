@@ -35,8 +35,17 @@ class App extends React.Component<any, IAppState> {
       <div className="App">
         <h1>Welcome to Gecko!</h1>
         <div>
-          <input type="text" placeholder="Enter a pattern" />
-          <button>Enter</button>
+          <input type="text" placeholder="Enter a pattern" onChange={
+            // tslint:disable-next-line:jsx-no-lambda
+            (event) => {
+              this.setState({'pattern': event.target.value})
+              this.requestAutomata(this.state.pattern);
+            }
+          }/>
+          <button onClick={
+            // tslint:disable-next-line:jsx-no-lambda
+            () => this.requestAutomata(this.state.pattern)
+            } >Enter</button>
         </div>
         <div>
           <input type="text" placeholder="Enter an input" />
@@ -50,45 +59,50 @@ class App extends React.Component<any, IAppState> {
     );
   }
 
-  // private requestAutomata(pattern: string) {
-  //   fetch("http://localhost:8080/pattern/" + encodeURI(pattern))
-  //     .then((resp) => resp.json())
-  //     .then(
-  //       (data) => {
-  //         this.setState(state => state.pattern = pattern);
-  //         this.handleAutomataData(data);
-  //       },
-  //       (error) => {
-  //         console.log("Gecko Server Unavailable.")
-  //       }
-  //     );
-  // }
+  private requestAutomata(pattern: string) {
+    // tslint:disable-next-line:no-console
+    console.log(pattern);
+    fetch("http://localhost:8080/pattern/" + encodeURI(pattern))
+      .then((resp) => resp.json())
+      .then(
+        (data) => {
+          this.setState({'pattern': pattern});
+          this.handleAutomataData(data);
+        },
+        (error) => {
+          // tslint:disable-next-line:no-console
+          console.log("Gecko Server Unavailable.", error)
+        }
+      );
+  }
 
-  // private handleAutomataData(automata: any) {
+  private handleAutomataData(automata: any) {
 
-  //   const newNodes = [];
-  //   for (const state of automata.States) {
-  //     const terminal = automata.TerminalStates.includes(state);
-  //     newNodes.push({ id: state, isTerminal: terminal });
-  //   }
+    const newNodes = [];
+    for (const state of automata.States) {
+      const terminal = automata.TerminalStates.includes(state);
+      newNodes.push({ id: state, isTerminal: terminal });
+    }
 
-  //   const newEdges = [];
-  //   const transitions = automata.Transitions;
-  //   for (const from in transitions) {
-  //     for (const over in transitions[from]) {
-  //       const to = transitions[from][over];
-  //       newEdges.push({ from: from, to: to, label: over });
-  //     }
-  //   }
+    const newEdges = [];
+    const transitions = automata.Transitions;
+    // tslint:disable-next-line:forin
+    for (const from in transitions) {
+      // tslint:disable-next-line:forin
+      for (const over in transitions[from]) {
+        const to = transitions[from][over];
+        newEdges.push({ 'from': +from, 'to': +to, 'label': over });
+      }
+    }
 
-  //   const newAutomata: IAutomata = {
-  //     currentNode: automata.CurrentState,
-  //     nodes: newNodes.sort(),
-  //     edges: newEdges
-  //   };
+    const newAutomata: IAutomata = {
+      currentNode: automata.CurrentState,
+      edges: newEdges,
+      nodes: newNodes.sort(),
+    };
 
-  //   this.setState({automata: newAutomata});
-  // }
+    this.setState({automata: newAutomata});
+  }
 
 }
 
