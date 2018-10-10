@@ -1,18 +1,28 @@
-import React, {Component} from 'react';
-import { select } from 'd3-selection';
-import {} from 'd3-graphviz';
+import { graphviz } from 'd3-graphviz';
+import * as React from 'react';
+import { IEdge } from 'src/automata/Edge';
+import { INode } from 'src/automata/Node';
 
-class Graph extends Component {
+class Graph extends React.Component<IGraphProps, any> {
 
-    render() {
+    public render() {
         return(
-            <div id="graphDiv" ref="graphDiv"></div>
+            <div id="graphDiv" />
         );
     }
 
-    loadGraph() {
-        select('#graphDiv')
-            .graphviz({useWorker: false})
+    public componentDidMount() {
+        this.loadGraph();
+    }
+    
+    
+    public componentDidUpdate() {
+        this.loadGraph();
+    }
+
+    private loadGraph() {
+        graphviz('#graphDiv')
+            // .graphviz({useWorker: false})
             .height(500)
             .width(500)
             .fit(true)
@@ -20,15 +30,7 @@ class Graph extends Component {
             .renderDot(this.generateDot());
     }
 
-    componentDidMount() {
-        this.loadGraph();
-    }
-
-    componentDidUpdate() {
-        this.loadGraph();
-    }
-
-    generateDot() {
+    private generateDot() {
         let dot = 'digraph { rankdir="LR";\n';
 
         for(const node of this.props.nodes) {
@@ -54,6 +56,12 @@ class Graph extends Component {
         dot += '}';
         return dot;
     }
+}
+
+export interface IGraphProps extends React.ClassAttributes<Graph> {
+    nodes: INode[]
+    edges: IEdge[]
+    currentNode: number
 }
 
 export default Graph;
