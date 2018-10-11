@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/DomParfitt/gecko/core"
 	"github.com/DomParfitt/gecko/core/automata"
+	"github.com/DomParfitt/gecko/core/parser"
 	"github.com/DomParfitt/gecko/server/api"
 	"github.com/gorilla/mux"
 	"log"
@@ -30,7 +31,7 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 
 	compiler := core.New()
 	compiler.Compile(pattern)
-	json, err := marshal(compiler.Exe)
+	json, err := marshalAutomata(compiler.Exe)
 	fmt.Printf("%s", json)
 	if err != nil {
 		fmt.Fprintf(w, "Error")
@@ -62,7 +63,7 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func marshal(exe *automata.FiniteState) ([]byte, error) {
+func marshalAutomata(exe *automata.FiniteState) ([]byte, error) {
 	a := &api.Automata{CurrentNode: 0}
 
 	states := []int{}
@@ -90,6 +91,11 @@ func marshal(exe *automata.FiniteState) ([]byte, error) {
 	a.Nodes = nodes
 	a.Edges = edges
 
+	return json.Marshal(a)
+}
+
+func marshalAST(ast *parser.RegExpr) ([]byte, error) {
+	a := &api.AST{}
 	return json.Marshal(a)
 }
 
