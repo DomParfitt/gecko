@@ -6,7 +6,7 @@ class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
     public render(): JSX.Element {
         return(
-            <div id="graphDiv" />
+            <div id="automataGraphDiv" />
         );
     }
 
@@ -20,7 +20,7 @@ class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
     }
 
     private loadGraph() {
-        graphviz('#graphDiv')
+        graphviz('#automataGraphDiv')
             // .graphviz({useWorker: false})
             .height(500)
             .width(500)

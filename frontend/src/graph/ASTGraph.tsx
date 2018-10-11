@@ -10,7 +10,7 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
 
     public render(): JSX.Element {
         return(
-            <div id="graphDiv" />
+            <div id="astGraphDiv" />
         );
     }
 
@@ -24,7 +24,7 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
     }
 
     private loadGraph() {
-        graphviz('#graphDiv')
+        graphviz('#astGraphDiv')
             // .graphviz({useWorker: false})
             .height(500)
             .width(500)
