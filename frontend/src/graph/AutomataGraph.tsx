@@ -1,8 +1,8 @@
 import { graphviz } from 'd3-graphviz';
 import * as React from 'react';
-import { IEdge, INode } from 'src/automata/Automata';
+import { IAutomata } from 'src/automata/Automata';
 
-class Graph extends React.Component<IGraphProps, any> {
+class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
     public render(): JSX.Element {
         return(
@@ -32,7 +32,7 @@ class Graph extends React.Component<IGraphProps, any> {
     private generateDot(): string {
         let dot = 'digraph { rankdir="LR";\n';
 
-        for(const node of this.props.nodes) {
+        for(const node of this.props.automata.nodes) {
             dot += node.id +' [';
 
             if (node.isTerminal) {
@@ -41,14 +41,14 @@ class Graph extends React.Component<IGraphProps, any> {
                 dot += 'shape="circle" ';
             }
 
-            if (node.id === this.props.currentNode) {
+            if (node.id === this.props.automata.currentNode) {
                 dot += 'fillcolor="red" style="filled" ';
             }
 
             dot += '];\n';
         }
 
-        for(const edge of this.props.edges) {
+        for(const edge of this.props.automata.edges) {
             dot += edge.from + '->' + edge.to + ' [label="' + edge.label + '"];\n';
         }
 
@@ -57,10 +57,8 @@ class Graph extends React.Component<IGraphProps, any> {
     }
 }
 
-export interface IGraphProps extends React.ClassAttributes<Graph> {
-    nodes: INode[]
-    edges: IEdge[]
-    currentNode: number
+export interface IAutomataGraphProps extends React.ClassAttributes<AutomataGraph> {
+    automata: IAutomata
 }
 
-export default Graph;
+export default AutomataGraph;
