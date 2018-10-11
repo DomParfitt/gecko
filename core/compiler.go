@@ -14,6 +14,7 @@ import (
 type Compiler struct {
 	parser *parser.Parser
 	Exe    *automata.FiniteState
+	Ast    *parser.RegExpr
 }
 
 //New Compiler
@@ -32,6 +33,7 @@ func (c *Compiler) Compile(pattern string) error {
 		return err
 	}
 
+	c.Ast = ast
 	c.Exe = ast.Compile()
 
 	return nil
