@@ -1,8 +1,8 @@
 import * as React from 'react';
 import './App.css'
 import { IAbstractSyntaxTree } from './ast/AbstractSyntaxTree';
-import { IAutomata, isAutomata } from './automata/Automata';
-import GraphsHolder from './graph/GraphsHolder';
+import { IAutomata } from './automata/Automata';
+import AutomataGraph from './graph/AutomataGraph';
 import TextInput from './input/TextInput';
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -65,8 +65,8 @@ class App extends React.Component<IAppProps, IAppState> {
                 <div>Pattern: {this.state.pattern}</div>
                 <div>Input: {this.state.input}</div>
                 <div>Matches: {this.state.matches.toString()}</div>
-                {/* <AutomataGraph automata={this.state.automata} /> */}
-                <GraphsHolder automata={this.state.automata} ast={this.state.ast} />
+                <AutomataGraph automata={this.state.automata} />
+                {/* <GraphsHolder automata={this.state.automata} ast={this.state.ast} /> */}
             </div>
         );
     }
@@ -93,19 +93,12 @@ class App extends React.Component<IAppProps, IAppState> {
             .then(
                 (data) => {
                     this.log(data);
-                    if (isAutomata(data.automata)) {
-                        this.handleAutomataData(data.automata);
-                    }
+                    this.setState({automata: data.automata, ast: data.ast})
                 },
                 (error) => {
                     this.log("Gecko Server Unavailable. " + error)
                 }
             );
-    }
-
-    private handleAutomataData(automata: IAutomata) {
-        automata.nodes.sort();
-        this.setState({ "automata": automata });
     }
 
     private log(message: string) {
