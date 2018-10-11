@@ -30,7 +30,7 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 
 	compiler := core.New()
 	compiler.Compile(pattern)
-	json, err := marshall(compiler.Exe)
+	json, err := marshal(compiler.Exe)
 	fmt.Printf("%s", json)
 	if err != nil {
 		fmt.Fprintf(w, "Error")
@@ -63,36 +63,6 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func marshal(exe *automata.FiniteState) ([]byte, error) {
-	a := &jsonAutomata{
-		CurrentState:   exe.CurrentState,
-		TerminalStates: exe.TerminalStates,
-	}
-
-	states := []int{}
-	transitions := make(map[int]map[string]int)
-	for from, transition := range exe.Transitions {
-		if !contains(states, from) {
-			states = append(states, from)
-		}
-		_, ok := transitions[from]
-		if !ok {
-			transitions[from] = make(map[string]int)
-		}
-		for ch, to := range transition {
-			if !contains(states, to) {
-				states = append(states, to)
-			}
-			transitions[from][string(ch)] = to
-		}
-	}
-
-	a.States = states
-	a.Transitions = transitions
-
-	return json.Marshal(a)
-}
-
-func marshall(exe *automata.FiniteState) ([]byte, error) {
 	a := &api.Automata{CurrentNode: 0}
 
 	states := []int{}
@@ -133,16 +103,9 @@ func contains(array []int, value int) bool {
 	return false
 }
 
-type jsonAutomata struct {
-	CurrentState   int
-	TerminalStates []int
-	States         []int
-	Transitions    map[int]map[string]int
-}
-
 type matchResponse struct {
-	Pattern string
-	Input   string
-	Result  bool
-	Steps   []int
+	Pattern string `json:"pattern"`
+	Input   string `json:"input"`
+	Result  bool   `json:"result"`
+	Steps   []int  `json:"steps"`
 }
