@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/DomParfitt/gecko/core"
 	"github.com/DomParfitt/gecko/core/automata"
-	"github.com/DomParfitt/gecko/core/parser"
 	"github.com/DomParfitt/gecko/server/api"
 	"github.com/gorilla/mux"
 	"log"
@@ -34,7 +33,7 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 
 	response := &api.PatternResponse{}
 	response.Automata = transformAutomata(compiler.Exe)
-	response.AST = transformAST(compiler.Ast)
+	response.AST = compiler.Ast.Transform()
 
 	json, err := json.Marshal(response)
 	fmt.Printf("%s", json)
@@ -96,11 +95,6 @@ func transformAutomata(exe *automata.FiniteState) api.Automata {
 	a.Nodes = nodes
 	a.Edges = edges
 
-	return a
-}
-
-func transformAST(ast *parser.RegExpr) api.AST {
-	a := api.AST{}
 	return a
 }
 
