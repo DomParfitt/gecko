@@ -53,7 +53,7 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintf(w, "Error")
 	} else {
-		json, err := json.Marshal(&matchResponse{Pattern: pattern, Input: input, Result: ok, Steps: steps})
+		json, err := json.Marshal(&api.MatchResponse{Pattern: pattern, Input: input, Result: ok, Steps: steps})
 		if err != nil {
 			fmt.Fprintf(w, "Error")
 		}
@@ -101,11 +101,4 @@ func contains(array []int, value int) bool {
 	}
 
 	return false
-}
-
-type matchResponse struct {
-	Pattern string `json:"pattern"`
-	Input   string `json:"input"`
-	Result  bool   `json:"result"`
-	Steps   []int  `json:"steps"`
 }
