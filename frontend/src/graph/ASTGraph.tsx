@@ -47,7 +47,7 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
     }
 
     private generateDotNodesHelper(ast: IAbstractSyntaxTree, count: number): {dot: string, count: number} {
-        const rootName = 'node' + count++;
+        const rootName = count++;
         let dot = rootName +  ' [label="' + ast.label + '"]\n';
         if (ast.children.length === 0) {
             return {dot, count};
@@ -55,7 +55,7 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
 
         let newCount = count;
         for (const child of ast.children) {
-            const childName = 'node' + newCount;
+            const childName = newCount;
             const result = this.generateDotNodesHelper(child, newCount++);
             dot += result.dot;
             dot += rootName + ' -> ' + childName + '\n';
