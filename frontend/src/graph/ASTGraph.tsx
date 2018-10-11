@@ -37,8 +37,6 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
         let dot = 'digraph {\n';
         dot += this.generateDotNodes(this.props.ast);
         dot += '}';
-        // tslint:disable-next-line:no-console
-        console.log(dot);
         return dot;
     }
 
