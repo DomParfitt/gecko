@@ -1,5 +1,6 @@
 import * as React from 'react';
 import './App.css'
+import { IAbstractSyntaxTree } from './ast/AbstractSyntaxTree';
 import { IAutomata, isAutomata } from './automata/Automata';
 import GraphsHolder from './graph/GraphsHolder';
 import TextInput from './input/TextInput';
@@ -10,7 +11,32 @@ class App extends React.Component<IAppProps, IAppState> {
         super(props);
 
         this.state = {
-            ast: {},
+            ast: {
+                children: [
+                    {
+                        children: [
+                            {
+                                children: [],
+                                label: 'a'
+                            },
+                            {
+                                children: [],
+                                label: 'b'
+                            }
+                        ],
+                        label: ''
+                    },
+                    {
+                        children: [],
+                        label: '|'
+                    },
+                    {
+                        children: [],
+                        label: 't'
+                    }
+                ],
+                label: 'root',
+            },
             automata: {
                 currentNode: 0,
                 edges: [
@@ -28,7 +54,6 @@ class App extends React.Component<IAppProps, IAppState> {
             matches: false,
             pattern: "abc",
         };
-
     }
 
     public render(): JSX.Element {
@@ -41,7 +66,7 @@ class App extends React.Component<IAppProps, IAppState> {
                 <div>Input: {this.state.input}</div>
                 <div>Matches: {this.state.matches.toString()}</div>
                 {/* <AutomataGraph automata={this.state.automata} /> */}
-                <GraphsHolder automata={this.state.automata} ast={this.state.ast}/>
+                <GraphsHolder automata={this.state.automata} ast={this.state.ast} />
             </div>
         );
     }
@@ -100,7 +125,7 @@ export interface IAppState extends React.ComponentState {
     input: string,
     pattern: string,
     matches: boolean,
-    ast: any,
+    ast: IAbstractSyntaxTree,
     automata: IAutomata
 }
 
