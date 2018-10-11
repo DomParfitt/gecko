@@ -4,11 +4,8 @@ import { IAbstractSyntaxTree } from 'src/ast/AbstractSyntaxTree';
 
 class ASTGraph extends React.Component<IASTGraphProps, any> {
 
-    private nodeCount: number;
-
     constructor(props: IASTGraphProps) {
         super(props);
-        this.nodeCount = 0;
     }
 
     public render(): JSX.Element {
@@ -40,27 +37,32 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
         let dot = 'digraph {\n';
         dot += this.generateDotNodes(this.props.ast);
         dot += '}';
-        this.nodeCount = 0;
         // tslint:disable-next-line:no-console
         console.log(dot);
         return dot;
     }
 
     private generateDotNodes(ast: IAbstractSyntaxTree): string {
-        const rootName = 'node' + this.nodeCount;
+        return this.generateDotNodesHelper(ast, 0).dot;
+    }
+
+    private generateDotNodesHelper(ast: IAbstractSyntaxTree, count: number): {dot: string, count: number} {
+        const rootName = 'node' + count++;
         let dot = rootName +  ' [label="' + ast.label + '"]\n';
         if (ast.children.length === 0) {
-            return dot;
+            return {dot, count};
         } 
 
+        let newCount = count;
         for (const child of ast.children) {
-            this.nodeCount++;
-            const childName = 'node' + this.nodeCount;
-            dot += this.generateDotNodes(child);
+            const childName = 'node' + newCount;
+            const result = this.generateDotNodesHelper(child, newCount++);
+            dot += result.dot;
             dot += rootName + ' -> ' + childName + '\n';
+            newCount = result.count;
         }
 
-        return dot;
+        return {dot, count: newCount};
     }
 }
 
