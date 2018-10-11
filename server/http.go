@@ -31,7 +31,12 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 
 	compiler := core.New()
 	compiler.Compile(pattern)
-	json, err := marshalAutomata(compiler.Exe)
+
+	response := &api.PatternResponse{}
+	response.Automata = transformAutomata(compiler.Exe)
+	response.AST = transformAST(compiler.Ast)
+
+	json, err := json.Marshal(response)
 	fmt.Printf("%s", json)
 	if err != nil {
 		fmt.Fprintf(w, "Error")
@@ -63,8 +68,8 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func marshalAutomata(exe *automata.FiniteState) ([]byte, error) {
-	a := &api.Automata{CurrentNode: 0}
+func transformAutomata(exe *automata.FiniteState) api.Automata {
+	a := api.Automata{CurrentNode: 0}
 
 	states := []int{}
 	edges := []api.Edge{}
@@ -91,12 +96,12 @@ func marshalAutomata(exe *automata.FiniteState) ([]byte, error) {
 	a.Nodes = nodes
 	a.Edges = edges
 
-	return json.Marshal(a)
+	return a
 }
 
-func marshalAST(ast *parser.RegExpr) ([]byte, error) {
-	a := &api.AST{}
-	return json.Marshal(a)
+func transformAST(ast *parser.RegExpr) api.AST {
+	a := api.AST{}
+	return a
 }
 
 func contains(array []int, value int) bool {
