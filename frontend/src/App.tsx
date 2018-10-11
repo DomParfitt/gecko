@@ -74,11 +74,11 @@ class App extends React.Component<IAppProps, IAppState> {
     private handlePatternChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const pattern = event.target.value;
         this.setState({ 'pattern': pattern });
-        this.requestAutomata(pattern);
+        this.requestPattern(pattern);
     }
 
     private handlePatternClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        this.requestAutomata(this.state.pattern);
+        this.requestPattern(this.state.pattern);
     }
 
     private handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +86,7 @@ class App extends React.Component<IAppProps, IAppState> {
         this.setState({ 'input': input });
     }
 
-    private requestAutomata(pattern: string) {
+    private requestPattern(pattern: string) {
         this.log(pattern);
         fetch("http://localhost:8080/pattern/" + encodeURI(pattern))
             .then((resp) => resp.json())
