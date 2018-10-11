@@ -5,18 +5,18 @@ import (
 )
 
 type Transformer interface {
-	transform() api.AST
+	Transform() api.AST
 }
 
-func (r *RegExpr) transform() api.AST {
+func (r *RegExpr) Transform() api.AST {
 	children := []api.AST{}
 
 	if r.union != nil {
-		children = append(children, r.union.transform())
+		children = append(children, r.union.Transform())
 	}
 
 	if r.simple != nil {
-		children = append(children, r.simple.transform())
+		children = append(children, r.simple.Transform())
 	}
 
 	return api.AST{
@@ -25,11 +25,11 @@ func (r *RegExpr) transform() api.AST {
 	}
 }
 
-func (u *Union) transform() api.AST {
+func (u *Union) Transform() api.AST {
 	children := []api.AST{}
-	children = append(children, u.regex.transform())
+	children = append(children, u.regex.Transform())
 	children = append(children, api.AST{Label: "|", Children: []api.AST{}})
-	children = append(children, u.simple.transform())
+	children = append(children, u.simple.Transform())
 
 	return api.AST{
 		Label:    "Union",
@@ -37,7 +37,7 @@ func (u *Union) transform() api.AST {
 	}
 }
 
-func (s *SimpleExpr) transform() api.AST {
+func (s *SimpleExpr) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -45,7 +45,7 @@ func (s *SimpleExpr) transform() api.AST {
 	}
 }
 
-func (c *Concatenation) transform() api.AST {
+func (c *Concatenation) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -53,7 +53,7 @@ func (c *Concatenation) transform() api.AST {
 	}
 }
 
-func (b *BasicExpr) transform() api.AST {
+func (b *BasicExpr) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -61,7 +61,7 @@ func (b *BasicExpr) transform() api.AST {
 	}
 }
 
-func (s *Star) transform() api.AST {
+func (s *Star) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -69,7 +69,7 @@ func (s *Star) transform() api.AST {
 	}
 }
 
-func (p *Plus) transform() api.AST {
+func (p *Plus) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -77,7 +77,7 @@ func (p *Plus) transform() api.AST {
 	}
 }
 
-func (q *Question) transform() api.AST {
+func (q *Question) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -85,7 +85,7 @@ func (q *Question) transform() api.AST {
 	}
 }
 
-func (e *Element) transform() api.AST {
+func (e *Element) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -93,7 +93,7 @@ func (e *Element) transform() api.AST {
 	}
 }
 
-func (g *Group) transform() api.AST {
+func (g *Group) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -101,7 +101,7 @@ func (g *Group) transform() api.AST {
 	}
 }
 
-func (e *Escape) transform() api.AST {
+func (e *Escape) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -109,7 +109,7 @@ func (e *Escape) transform() api.AST {
 	}
 }
 
-func (s *Set) transform() api.AST {
+func (s *Set) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -117,7 +117,7 @@ func (s *Set) transform() api.AST {
 	}
 }
 
-func (p *PositiveSet) transform() api.AST {
+func (p *PositiveSet) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -125,7 +125,7 @@ func (p *PositiveSet) transform() api.AST {
 	}
 }
 
-func (n *NegativeSet) transform() api.AST {
+func (n *NegativeSet) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -133,7 +133,7 @@ func (n *NegativeSet) transform() api.AST {
 	}
 }
 
-func (s *SetItems) transform() api.AST {
+func (s *SetItems) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -141,7 +141,7 @@ func (s *SetItems) transform() api.AST {
 	}
 }
 
-func (s *SetItem) transform() api.AST {
+func (s *SetItem) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -149,7 +149,7 @@ func (s *SetItem) transform() api.AST {
 	}
 }
 
-func (r *Range) transform() api.AST {
+func (r *Range) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -157,7 +157,7 @@ func (r *Range) transform() api.AST {
 	}
 }
 
-func (c *Character) transform() api.AST {
+func (c *Character) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
@@ -165,7 +165,7 @@ func (c *Character) transform() api.AST {
 	}
 }
 
-func (b *Base) transform() api.AST {
+func (b *Base) Transform() api.AST {
 	children := []api.AST{}
 	return api.AST{
 		Label:    "Union",
