@@ -93,8 +93,8 @@ class App extends React.Component<IAppProps, IAppState> {
             .then(
                 (data) => {
                     this.log(data);
-                    if (isAutomata(data)) {
-                        this.handleAutomataData(data);
+                    if (isAutomata(data.automata)) {
+                        this.handleAutomataData(data.automata);
                     }
                 },
                 (error) => {
