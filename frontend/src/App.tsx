@@ -2,8 +2,7 @@ import * as React from 'react';
 import './App.css'
 import { IAbstractSyntaxTree } from './ast/AbstractSyntaxTree';
 import { IAutomata } from './automata/Automata';
-import ASTGraph from './graph/ASTGraph';
-import AutomataGraph from './graph/AutomataGraph';
+import GraphsHolder from './graph/GraphsHolder';
 import TextInput from './input/TextInput';
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -66,9 +65,9 @@ class App extends React.Component<IAppProps, IAppState> {
                 <div>Pattern: {this.state.pattern}</div>
                 <div>Input: {this.state.input}</div>
                 <div>Matches: {this.state.matches.toString()}</div>
-                <AutomataGraph automata={this.state.automata} />
-                <ASTGraph ast={this.state.ast} />
-                {/* <GraphsHolder automata={this.state.automata} ast={this.state.ast} /> */}
+                {/* <AutomataGraph automata={this.state.automata} />
+                <ASTGraph ast={this.state.ast} /> */}
+                <GraphsHolder automata={this.state.automata} ast={this.state.ast} />
             </div>
         );
     }
