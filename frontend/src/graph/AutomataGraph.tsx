@@ -21,7 +21,6 @@ class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
     private loadGraph() {
         graphviz('#automataGraphDiv')
-            // .graphviz({useWorker: false})
             .height(500)
             .width(500)
             .fit(true)
