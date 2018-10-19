@@ -25,6 +25,7 @@ const (
 	Escape
 	Pipe
 	Dash
+	Comma
 )
 
 //Token represents a lexed character. Contains the
@@ -67,6 +68,8 @@ func Match(ch rune) Type {
 		return Pipe
 	case '-':
 		return Dash
+	case ',':
+		return Comma
 	default:
 		return Character
 	}
