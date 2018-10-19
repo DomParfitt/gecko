@@ -562,13 +562,16 @@ func TestParser_base(t *testing.T) {
 }
 
 func TestParser_consume(t *testing.T) {
+	parser := parserFrom("a")
 	tests := []struct {
 		name  string
 		p     *Parser
 		want  lexer.Token
 		want1 bool
 	}{
-		// TODO: Add test cases.
+		{"Consume token success", parser, lexer.Token{Value: 'a', Type: lexer.Character}, true},
+		{"Consume token success", parser, lexer.Token{Value: 'a', Type: lexer.Character}, false},
+		{"No tokens to consume", parserFrom(""), lexer.Token{Value: ' ', Type: lexer.Character}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
