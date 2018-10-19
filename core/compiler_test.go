@@ -1,25 +1,8 @@
 package core
 
 import (
-	"reflect"
 	"testing"
 )
-
-func TestNew(t *testing.T) {
-	tests := []struct {
-		name string
-		want *Compiler
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := New(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("New() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func TestCompiler_Compile(t *testing.T) {
 	type args struct {
@@ -31,7 +14,10 @@ func TestCompiler_Compile(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{"Compiles valid pattern", New(), args{pattern: "abc"}, false},
+		{"Errors on partial pattern", New(), args{pattern: "abc["}, true},
+		{"Errors on mismatched bracket", New(), args{pattern: "["}, true},
+		{"Errors on no pattern", New(), args{pattern: ""}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -53,7 +39,7 @@ func TestCompiler_Match(t *testing.T) {
 		want    bool
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{"No compiled pattern", New(), args{input: "abc"}, false, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -97,6 +83,7 @@ func TestCompiler_MatchPattern(t *testing.T) {
 		{"", New(), args{pattern: "ab|a", input: "a"}, true, false},
 		{"", New(), args{pattern: "ab|a", input: "aab"}, false, false},
 		{"", New(), args{pattern: "ab|a", input: ""}, false, false},
+		{"Invalid pattern", New(), args{pattern: "", input: ""}, false, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
