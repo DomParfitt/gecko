@@ -30,7 +30,10 @@ func (p *Parser) Parse(tokens []lexer.Token) (*RegExpr, error) {
 	regExpr, ok := p.regExpr()
 
 	if !ok {
-		return nil, fmt.Errorf("the full token stream could not be parsed. Invalid token stream beginning at column %d with token %s", 0, p.tokens[0])
+		if len(p.tokens) > 0 {
+			return nil, fmt.Errorf("the full token stream could not be parsed. Invalid token stream beginning at column %d with token %s", 0, p.tokens[0])
+		}
+		return nil, fmt.Errorf("there were no tokens to parse in the token stream")
 	}
 
 	if p.cursor != len(p.tokens) {
@@ -238,11 +241,13 @@ func (p *Parser) escape() (*Escape, bool) {
 }
 
 func (p *Parser) set() (*Set, bool) {
+	reset := p.reset()
 	positive, ok := p.positiveSet()
 	if ok {
 		return &Set{positive: positive}, true
 	}
 
+	reset()
 	negative, ok := p.negativeSet()
 	if ok {
 		return &Set{negative: negative}, true
@@ -307,18 +312,21 @@ func (p *Parser) setItems() (*SetItems, bool) {
 }
 
 func (p *Parser) setItem() (*SetItem, bool) {
+	reset := p.reset()
 	rnge, ok := p.rangeExpr()
 
 	if ok {
 		return &SetItem{rnge: rnge}, true
 	}
 
+	reset()
 	character, ok := p.character()
 
 	if ok {
 		return &SetItem{character: character}, true
 	}
 
+	reset()
 	return nil, false
 
 }
