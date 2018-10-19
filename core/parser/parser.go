@@ -459,3 +459,12 @@ func (p *Parser) reset() func() {
 		p.cursor = cursor
 	}
 }
+
+func (p *Parser) numeric(token lexer.Token) (int, bool) {
+	switch token.Value {
+	case '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9':
+		return int(token.Value - '0'), true
+	}
+
+	return 0, false
+}
