@@ -195,7 +195,14 @@ func (p *Parser) repetition() (*Repetition, bool) {
 		return nil, false
 	}
 
-	min, ok := p.consume()
+	token, ok := p.consume()
+
+	min, numeric := p.numeric(token)
+
+	if !numeric {
+		return nil, false
+	}
+
 	max := min
 
 	if !ok {
@@ -203,18 +210,23 @@ func (p *Parser) repetition() (*Repetition, bool) {
 	}
 
 	if p.consumeAndMatch(lexer.Comma) {
-		max, ok = p.consume()
-
+		token, ok = p.consume()
 		if !ok {
 			return nil, false
 		}
+
+		max, numeric = p.numeric(token)
+		if !numeric {
+			return nil, false
+		}
+
 	}
 
 	if !p.consumeAndMatch(lexer.CloseBrace) {
 		return nil, false
 	}
 
-	return &Repetition{element: element, min: int(min.Value - '0'), max: int(max.Value - '0')}, true
+	return &Repetition{element: element, min: min, max: max}, true
 }
 
 func (p *Parser) element() (*Element, bool) {
