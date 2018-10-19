@@ -5,9 +5,10 @@
 package parser
 
 import (
-	"github.com/DomParfitt/gecko/core/lexer"
 	"reflect"
 	"testing"
+
+	"github.com/DomParfitt/gecko/core/lexer"
 )
 
 func TestNew(t *testing.T) {
@@ -247,6 +248,34 @@ func TestParser_question(t *testing.T) {
 			}
 			if got1 != tt.want1 {
 				t.Errorf("Parser.question() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestParser_repetition(t *testing.T) {
+	tests := []struct {
+		name  string
+		p     *Parser
+		want  *Repetition
+		want1 bool
+	}{
+		{"Valid Repetition", parserFrom("a{0}"), &Repetition{element: elementFromChar('a'), min: 0, max: 0}, true},
+		{"Valid Repetition range", parserFrom("a{0,2}"), &Repetition{element: elementFromChar('a'), min: 0, max: 2}, true},
+		{"No closing brace", parserFrom("a{0"), nil, false},
+		{"No opening brace", parserFrom("a0}"), nil, false},
+		{"No max value", parserFrom("a{0,}"), nil, false},
+		{"No min value", parserFrom("a{}"), nil, false},
+		{"No remaining tokens", parserFrom(""), nil, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := tt.p.repetition()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.repetition() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Parser.repetition() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}

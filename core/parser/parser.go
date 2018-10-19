@@ -184,6 +184,39 @@ func (p *Parser) question() (*Question, bool) {
 	return &Question{base}, true
 }
 
+func (p *Parser) repetition() (*Repetition, bool) {
+	element, ok := p.element()
+
+	if !ok {
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.OpenBrace) {
+		return nil, false
+	}
+
+	min, ok := p.consume()
+	max := min
+
+	if !ok {
+		return nil, false
+	}
+
+	if p.consumeAndMatch(lexer.Comma) {
+		max, ok = p.consume()
+
+		if !ok {
+			return nil, false
+		}
+	}
+
+	if !p.consumeAndMatch(lexer.CloseBrace) {
+		return nil, false
+	}
+
+	return &Repetition{element: element, min: int(min.Value - '0'), max: int(max.Value - '0')}, true
+}
+
 func (p *Parser) element() (*Element, bool) {
 	group, ok := p.group()
 	if ok {
