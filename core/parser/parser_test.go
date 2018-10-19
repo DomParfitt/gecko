@@ -259,7 +259,7 @@ func TestParser_element(t *testing.T) {
 		want  *Element
 		want1 bool
 	}{
-		// {"Valid Element from Group", parserFrom("(a)"), nil, true},
+		{"Valid Element from Group", parserFrom("(a)"), elementFromGroup('a'), true},
 		{"Valid Element from Set", parserFrom("[a-z]"), elementFromSet('a', 'z'), true},
 		{"Valid Element from Character", parserFrom("a"), elementFromChar('a'), true},
 		{"Valid Element from Escape", parserFrom("\\*"), elementFromEscape(lexer.Star, '*'), true},
@@ -656,6 +656,10 @@ func star(char rune) *Star {
 
 func question(char rune) *Question {
 	return &Question{element: elementFromChar(char)}
+}
+
+func elementFromGroup(char rune) *Element {
+	return &Element{group: group(char)}
 }
 
 func elementFromSet(first, last rune) *Element {
