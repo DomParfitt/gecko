@@ -51,7 +51,7 @@ type Question struct {
 	element *Element
 }
 
-//Repetition ::= Element "{x [,y]}"
+//Repetition ::= Element "{x [,[y]}"
 type Repetition struct {
 	min, max int
 	element  *Element
