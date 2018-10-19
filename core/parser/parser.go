@@ -30,7 +30,10 @@ func (p *Parser) Parse(tokens []lexer.Token) (*RegExpr, error) {
 	regExpr, ok := p.regExpr()
 
 	if !ok {
-		return nil, fmt.Errorf("the full token stream could not be parsed. Invalid token stream beginning at column %d with token %s", 0, p.tokens[0])
+		if len(p.tokens) > 0 {
+			return nil, fmt.Errorf("the full token stream could not be parsed. Invalid token stream beginning at column %d with token %s", 0, p.tokens[0])
+		}
+		return nil, fmt.Errorf("there were no tokens to parse in the token stream")
 	}
 
 	if p.cursor != len(p.tokens) {
@@ -181,6 +184,51 @@ func (p *Parser) question() (*Question, bool) {
 	return &Question{base}, true
 }
 
+func (p *Parser) repetition() (*Repetition, bool) {
+	element, ok := p.element()
+
+	if !ok {
+		return nil, false
+	}
+
+	if !p.consumeAndMatch(lexer.OpenBrace) {
+		return nil, false
+	}
+
+	token, ok := p.consume()
+
+	min, numeric := p.numeric(token)
+
+	if !numeric {
+		return nil, false
+	}
+
+	max := min
+
+	if !ok {
+		return nil, false
+	}
+
+	if p.consumeAndMatch(lexer.Comma) {
+		token, ok = p.consume()
+		if !ok {
+			return nil, false
+		}
+
+		max, numeric = p.numeric(token)
+		if !numeric {
+			return nil, false
+		}
+
+	}
+
+	if !p.consumeAndMatch(lexer.CloseBrace) {
+		return nil, false
+	}
+
+	return &Repetition{element: element, min: min, max: max}, true
+}
+
 func (p *Parser) element() (*Element, bool) {
 	group, ok := p.group()
 	if ok {
@@ -238,11 +286,13 @@ func (p *Parser) escape() (*Escape, bool) {
 }
 
 func (p *Parser) set() (*Set, bool) {
+	reset := p.reset()
 	positive, ok := p.positiveSet()
 	if ok {
 		return &Set{positive: positive}, true
 	}
 
+	reset()
 	negative, ok := p.negativeSet()
 	if ok {
 		return &Set{negative: negative}, true
@@ -307,18 +357,21 @@ func (p *Parser) setItems() (*SetItems, bool) {
 }
 
 func (p *Parser) setItem() (*SetItem, bool) {
+	reset := p.reset()
 	rnge, ok := p.rangeExpr()
 
 	if ok {
 		return &SetItem{rnge: rnge}, true
 	}
 
+	reset()
 	character, ok := p.character()
 
 	if ok {
 		return &SetItem{character: character}, true
 	}
 
+	reset()
 	return nil, false
 
 }
@@ -417,4 +470,13 @@ func (p *Parser) reset() func() {
 	return func() {
 		p.cursor = cursor
 	}
+}
+
+func (p *Parser) numeric(token lexer.Token) (int, bool) {
+	switch token.Value {
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		return int(token.Value - '0'), true
+	}
+
+	return 0, false
 }
