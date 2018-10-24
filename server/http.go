@@ -98,6 +98,24 @@ func transformAutomata(exe *automata.FiniteState) api.Automata {
 	return a
 }
 
+func transform(exe *automata.FSM) api.Automata {
+	a := api.Automata{CurrentNode: 0}
+
+	nodes := []api.Node{}
+	for id, terminal := range exe.Nodes {
+		node := api.Node{ID: id, IsTerminal: terminal}
+		nodes = append(nodes, node)
+	}
+
+	edges := []api.Edge{}
+	for edge := range exe.Edges {
+		newEdge := api.Edge{From: edge.From, To: edge.To, Label: string(edge.Label)}
+		edges = append(edges, newEdge)
+	}
+
+	return a
+}
+
 func contains(array []int, value int) bool {
 	for _, present := range array {
 		if present == value {
