@@ -32,7 +32,7 @@ func patternHandler(w http.ResponseWriter, r *http.Request) {
 	compiler.Compile(pattern)
 
 	response := &api.PatternResponse{}
-	response.Automata = transformAutomata(compiler.Exe)
+	response.Automata = transform(compiler.Exe)
 	response.AST = compiler.Ast.Transform()
 
 	json, err := json.Marshal(response)
@@ -54,11 +54,11 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 
 	compiler := core.New()
 	ok, err := compiler.MatchPattern(pattern, input)
-	ok, steps := compiler.Exe.ExecuteStep(input)
+	// ok, steps := compiler.Exe.ExecuteStep(input)
 	if err != nil {
 		fmt.Fprintf(w, "Error")
 	} else {
-		json, err := json.Marshal(&api.MatchResponse{Pattern: pattern, Input: input, Result: ok, Steps: steps})
+		json, err := json.Marshal(&api.MatchResponse{Pattern: pattern, Input: input, Result: ok})
 		if err != nil {
 			fmt.Fprintf(w, "Error")
 		}
