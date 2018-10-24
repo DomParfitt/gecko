@@ -197,9 +197,3 @@ func (c *Character) Compile() *automata.FiniteState {
 func (b *Base) Compile() *automata.FiniteState {
 	return automata.Create([]rune{b.Value})
 }
-
-// Compile something implementing the Compiler interface and return the result
-// on the provided channel
-func compile(ch chan<- *automata.FiniteState, compilable Compiler) {
-	ch <- compilable.Compile()
-}
