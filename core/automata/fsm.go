@@ -37,7 +37,7 @@ func (e Edge) copyWithOffset(offset int) Edge {
 // the given character
 func NewFSM(char rune) *FSM {
 	fsm := emptyFSM()
-	fsm.addEdge(0, 1, char)
+	fsm.AddEdge(0, 1, char)
 	fsm.Nodes[1] = true
 	return fsm
 }
@@ -49,6 +49,26 @@ func emptyFSM() *FSM {
 		Nodes:       make(map[int]bool),
 		Edges:       make(map[Edge]interface{}), //[]Edge{},
 	}
+}
+
+func (f *FSM) Execute(input string) bool {
+	f.currentNode = 0
+	for _, ch := range input {
+		edges := f.edgesFrom(f.currentNode)
+
+		if len(edges) == 0 {
+			return false
+		}
+
+		for _, edge := range edges {
+			if edge.Label == ch {
+				f.currentNode = edge.To
+				break
+			}
+			return false
+		}
+	}
+	return f.Nodes[f.currentNode]
 }
 
 // Append adds the other FSM to the end of the current one.
@@ -65,16 +85,16 @@ func (f *FSM) Append(other *FSM) {
 		char := edge.Label
 		if from-offset == 0 {
 			for _, terminal := range terminals {
-				f.addEdge(terminal, to, char)
+				f.AddEdge(terminal, to, char)
 				f.Nodes[terminal] = false
 			}
 		} else if to-offset == 0 {
 			for _, terminal := range terminals {
-				f.addEdge(from, terminal, char)
+				f.AddEdge(from, terminal, char)
 				f.Nodes[terminal] = false
 			}
 		} else {
-			f.addEdge(from, to, char)
+			f.AddEdge(from, to, char)
 		}
 	}
 
@@ -114,7 +134,7 @@ func (f *FSM) Loop() {
 			to := edge.To
 			from := terminal
 			char := edge.Label
-			f.addEdge(from, to, char)
+			f.AddEdge(from, to, char)
 		}
 	}
 
@@ -167,9 +187,9 @@ func (f *FSM) terminals() []int {
 	return terminals
 }
 
-// addEdge adds a new Edge to the FSM if a matching Edge does not
+// AddEdge adds a new Edge to the FSM if a matching Edge does not
 // already exist, adding new states if required.
-func (f *FSM) addEdge(from, to int, char rune) {
+func (f *FSM) AddEdge(from, to int, char rune) {
 	f.addState(from, false)
 	f.addState(to, false)
 
