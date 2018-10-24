@@ -56,21 +56,25 @@ func emptyFSM() *FSM {
 func (f *FSM) Execute(input string) bool {
 	f.currentNode = 0
 	for _, ch := range input {
-		edges := f.edgesFrom(f.currentNode)
-
-		if len(edges) == 0 {
-			return false
-		}
-
-		for _, edge := range edges {
-			if edge.Label == ch {
-				f.currentNode = edge.To
-				break
-			}
+		if !f.transition(ch) {
 			return false
 		}
 	}
 	return f.Nodes[f.currentNode]
+}
+
+// transition attempts to transition from the current state using the provided character.
+// Returns true if the transition is possible, false otherwise. Updates the current state
+// if the transition is possible
+func (f *FSM) transition(char rune) bool {
+	edges := f.edgesFrom(f.currentNode)
+	for _, edge := range edges {
+		if edge.Label == char {
+			f.currentNode = edge.To
+			return true
+		}
+	}
+	return false
 }
 
 // Append adds the other FSM to the end of the current one.
