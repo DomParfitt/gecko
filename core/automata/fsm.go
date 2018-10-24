@@ -265,3 +265,33 @@ func (f *FSM) copyWithOffset(offset int) *FSM {
 
 	return copy
 }
+
+// prune walks the automata graph and flattens any duplicate
+// states into a single state
+func (f *FSM) prune() {
+	equivalentStates := make(map[int]int)
+	for first, firstTerm := range f.Nodes {
+		for second, secondTerm := range f.Nodes {
+			if first == second {
+				continue
+			}
+
+			if firstTerm != secondTerm {
+				continue
+			}
+
+			edgesFromFirst := f.edgesFrom(first)
+			edgesFromSecond := f.edgesFrom(second)
+
+			fromEdgesMatch := false
+			if len(edgesFromFirst) == len(edgesFromSecond) {
+				for _, edgeFromFirst := range edgesFromFirst {
+
+				}
+			}
+
+			edgesToFirst := f.edgesTo(first)
+			edgesToSecond := f.edgesTo(second)
+		}
+	}
+}
