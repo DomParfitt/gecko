@@ -13,7 +13,7 @@ import (
 // a regex
 type Compiler struct {
 	parser *parser.Parser
-	Exe    *automata.FSM
+	Exe    *automata.FiniteState
 	Ast    *parser.RegExpr
 }
 

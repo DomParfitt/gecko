@@ -1,286 +1,267 @@
-//Package automata contains implementations of the automata that represent the final
-//stage of parsing and compiling a pattern.
 package automata
 
 import (
-	"fmt"
 	"sort"
 )
 
-// FiniteState struct
+// FiniteState structure representing a Finite State Machine
 type FiniteState struct {
-	nextState      int
-	CurrentState   int
-	TerminalStates []int
-	Transitions    map[int]map[rune]int
+	currentNode int
+	Nodes       map[int]bool         //[]Node
+	Edges       map[Edge]interface{} //[]Edge
 }
 
-// New creates a default instance of a FiniteState
-// struct and returns a pointer to it
-func New() *FiniteState {
+// Edge structure representing a transition within an FiniteState
+type Edge struct {
+	From  int
+	To    int
+	Label rune
+}
+
+// Copy makes a copy of the given Edge
+func (e Edge) copy() Edge {
+	return e.copyWithOffset(0)
+}
+
+// copyWithOffset makes a copy of the given Edge with the
+// From and To states offset by the given value
+func (e Edge) copyWithOffset(offset int) Edge {
+	from := e.From
+	to := e.To
+
+	if from != 0 {
+		from += offset
+	}
+
+	if to != 0 {
+		to += offset
+	}
+
+	return Edge{
+		From:  from,
+		To:    to,
+		Label: e.Label,
+	}
+}
+
+// NewFiniteState initialises a new FiniteState with a two states and a transition between them using
+// the given character
+func NewFiniteState(char rune) *FiniteState {
+	FiniteState := emptyFiniteState()
+	FiniteState.AddEdge(0, 1, char)
+	FiniteState.Nodes[1] = true
+	return FiniteState
+}
+
+// emptyFiniteState creates an empty FiniteState with no nodes or edges
+func emptyFiniteState() *FiniteState {
 	return &FiniteState{
-		nextState:      1,
-		CurrentState:   0,
-		TerminalStates: []int{0},
-		Transitions:    make(map[int]map[rune]int),
+		currentNode: 0,
+		Nodes:       make(map[int]bool),
+		Edges:       make(map[Edge]interface{}), //[]Edge{},
 	}
 }
 
-// Create a new finite state with two states and a single set of transitions
-// from the first to the second using the provided characters
-func Create(chars []rune) *FiniteState {
-	f := New()
-	f.AddTransition(0, 1, chars)
-	f.TerminalStates = []int{1}
-	return f
-}
-
-func (f *FiniteState) addTerminal(terminal int) {
-	for _, val := range f.TerminalStates {
-		if val == terminal {
-			return
-		}
-	}
-	f.TerminalStates = append(f.TerminalStates, terminal)
-}
-
-// AddTransition from one state to another which consumes one of the
-// provided characters. If there already exists a transition from the
-// 'from' state using one of the provided charcters then it is overwritten.
-func (f *FiniteState) AddTransition(from, to int, chars []rune) {
-
-	//Update the next state indicator if necessary
-	if from > f.nextState {
-		f.nextState = from + 1
-	}
-
-	if to > f.nextState {
-		f.nextState = to + 1
-	}
-
-	// If we have a transition set from this state already
-	// then add/update
-	if transitionsFrom, ok := f.Transitions[from]; ok {
-		for _, ch := range chars {
-			if f.isTerminal(transitionsFrom[ch]) {
-				f.addTerminal(to)
-			}
-			transitionsFrom[ch] = to
-		}
-	} else {
-		transitionsFrom := make(map[rune]int)
-		for _, ch := range chars {
-			transitionsFrom[ch] = to
-		}
-		f.Transitions[from] = transitionsFrom
-	}
-}
-
-// Append the given automata onto the end of this one
-func (f *FiniteState) Append(other *FiniteState) {
-	offset := f.nextState
-	f.nextState += other.nextState
-
-	//Update transitions from the other initial
-	for from, transition := range other.Transitions {
-		if from == 0 {
-			for _, terminal := range f.TerminalStates {
-				for ch, to := range transition {
-					f.AddTransition(terminal, to+offset, []rune{ch})
-				}
-			}
-		} else {
-			for ch, to := range transition {
-				if to == 0 {
-					for terminal := range f.TerminalStates {
-						f.AddTransition(from+offset, terminal, []rune{ch})
-					}
-				} else {
-					f.AddTransition(from+offset, to+offset, []rune{ch})
-				}
-			}
-		}
-	}
-
-	//Set new terminal
-	newTerms := []int{}
-	for _, term := range other.TerminalStates {
-		newTerms = append(newTerms, term+offset)
-	}
-	f.TerminalStates = newTerms
-
-}
-
-//Union the given automata with this one
-func (f *FiniteState) Union(other *FiniteState) {
-	offset := f.nextState
-	f.nextState += other.nextState
-
-	mapping := make(map[int]int)
-
-	//Copy transitions from other
-	for from, transition := range other.Transitions {
-
-		isFromTerm := other.isTerminal(from)
-
-		//Anything from the other's initial goes from f's initial
-		//Anything else gets offset
-		if from != 0 {
-			from += offset
-		}
-
-		if mappedFrom, ok := mapping[from]; ok {
-			from = mappedFrom
-		}
-
-		if isFromTerm {
-			f.addTerminal(from)
-		}
-
-		for ch, to := range transition {
-
-			isToTerm := other.isTerminal(to)
-
-			if to != 0 {
-				to += offset
-			}
-
-			//Add transition if there isn't one already
-			if existingTo, ok := f.Transitions[from][ch]; ok {
-				mapping[to] = existingTo
-			}
-
-			//If we already have a mapping then use that
-			if mappedTo, ok := mapping[to]; ok {
-				to = mappedTo
-			}
-
-			if isToTerm {
-				f.addTerminal(to)
-			}
-
-			f.AddTransition(from, to, []rune{ch})
-
-			//Handle any internal loops by adding an additional state for them
-			if existingTransitions, ok := f.Transitions[from]; ok {
-				for over, existingTo := range existingTransitions {
-					if from == existingTo {
-						f.nextState++
-						newState := f.nextState
-						f.AddTransition(from, newState, []rune{over})
-						f.AddTransition(newState, newState, []rune{over})
-						f.addTerminal(newState)
-					}
-				}
-			}
-		}
-	}
-}
-
-// Loop this automata on itself
-func (f *FiniteState) Loop() {
-	for from, transition := range f.Transitions {
-
-		//If the transition comes from the initial state then we need
-		//matching transitions from each terminal state
-		if from == 0 {
-			for _, state := range f.TerminalStates {
-				for ch, to := range transition {
-					f.AddTransition(state, to, []rune{ch})
-				}
-			}
-		}
-	}
-
-	f.addTerminal(0)
-}
-
-// Negate this automata, i.e. make it non-accepting on it's original pattern
-func (f *FiniteState) Negate() {
-	terminals := []int{}
-
-	for from, transition := range f.Transitions {
-		if !f.isTerminal(from) {
-			terminals = append(terminals, from)
-		}
-
-		for _, to := range transition {
-			if !f.isTerminal(to) {
-				terminals = append(terminals, to)
-			}
-		}
-	}
-
-	f.TerminalStates = terminals
-}
-
-func (f *FiniteState) String() string {
-	sort.Ints(f.TerminalStates)
-	str := fmt.Sprintf("Terminals: %v\n", f.TerminalStates)
-	for from, transition := range f.Transitions {
-		tran := ""
-		for ch, to := range transition {
-			tran += fmt.Sprintf("\n    %c => %d", ch, to)
-		}
-		str += fmt.Sprintf("%d: %s\n", from, tran)
-	}
-	return str
-}
-
-// Execute the provided input string on the automata that
-// f represents.
-// Returns true if the input string is accepted by the automata
-// and false otherwise
+// Execute the input string against the automata.
+// Returns true if the string matches, false otherwise.
 func (f *FiniteState) Execute(input string) bool {
-	f.CurrentState = 0
+	f.currentNode = 0
 	for _, ch := range input {
-		if !f.consume(ch) {
+		if !f.transition(ch) {
 			return false
 		}
 	}
-	return f.isTerminal(f.CurrentState)
+	return f.Nodes[f.currentNode]
 }
 
-func (f *FiniteState) ExecuteStep(input string) (bool, []int) {
-	f.CurrentState = 0
-	steps := []int{0}
-	for _, ch := range input {
-		if !f.consume(ch) {
-			return false, []int{}
-		}
-		steps = append(steps, f.CurrentState)
-	}
-	return f.isTerminal(f.CurrentState), steps
-}
-
-// Consume a character and update the state of the
-// automata as required.
-// Returns a bool indicating success or failure, where
-// failure indicates that the given character could not
-// be consumed from the current state of the automata
-func (f *FiniteState) consume(ch rune) bool {
-	return f.transition(f.CurrentState, ch)
-}
-
-// Transition from the 'from' state to the 'to' state,
-// consuming the provided character in the process.
-// Returns true if successful, false if there is no such
-// transition between the two states using the given character
-func (f *FiniteState) transition(from int, ch rune) bool {
-
-	if to, ok := f.Transitions[from][ch]; ok {
-		f.CurrentState = to
-		return true
-	}
-
-	return false
-}
-
-func (f *FiniteState) isTerminal(state int) bool {
-	for _, val := range f.TerminalStates {
-		if state == val {
+// transition attempts to transition from the current state using the provided character.
+// Returns true if the transition is possible, false otherwise. Updates the current state
+// if the transition is possible
+func (f *FiniteState) transition(char rune) bool {
+	edges := f.edgesFrom(f.currentNode)
+	for _, edge := range edges {
+		if edge.Label == char {
+			f.currentNode = edge.To
 			return true
 		}
 	}
 	return false
+}
+
+// Append adds the other FiniteState to the end of the current one.
+// I.e. if given A = [0]-a->[1*], and B = [0]-b->[1*] then appending
+// B to A (A.Append(B)) should result in A = [0]-a->[1]-b->[2*]
+func (f *FiniteState) Append(other *FiniteState) {
+	offset := f.nextState()
+	copy := other.copyWithOffset(offset)
+	terminals := f.terminals()
+
+	for edge := range copy.Edges {
+		from := edge.From
+		to := edge.To
+		char := edge.Label
+		if from == 0 {
+			for _, terminal := range terminals {
+				f.AddEdge(terminal, to, char)
+				f.Nodes[terminal] = false
+			}
+		} else if to == 0 {
+			for _, terminal := range terminals {
+				f.AddEdge(from, terminal, char)
+				f.Nodes[terminal] = false
+			}
+		} else {
+			f.AddEdge(from, to, char)
+		}
+	}
+
+	for _, terminal := range copy.terminals() {
+		f.Nodes[terminal] = true
+	}
+}
+
+// Union adds the other FiniteState to the current one as a branch.
+// I.e. if given A = [0]-a->[1*], and B = [0]-b->[1*] then unioning
+// B to A (A.Union(B)) should result in A = [0]-(a,b)->[1*]
+func (f *FiniteState) Union(other *FiniteState) {
+	offset := f.nextState()
+	copy := other.copyWithOffset(offset)
+
+	for edge := range copy.Edges {
+		from := edge.From
+		to := edge.To
+		char := edge.Label
+
+		f.AddEdge(from, to, char)
+		f.Nodes[from] = copy.Nodes[edge.From]
+		f.Nodes[to] = copy.Nodes[edge.To]
+	}
+}
+
+// Loop sets the FiniteState to loop back on itself.
+// I.e. if given A = [0]-a->[1*] then looping A on itself (A.Loop())
+// should result in A = [0*]-a->[1*]-a->[1*]
+func (f *FiniteState) Loop() {
+	edgesFromInitial := f.edgesFrom(0)
+
+	for _, edge := range edgesFromInitial {
+		terminals := f.terminals()
+		for _, terminal := range terminals {
+			to := edge.To
+			from := terminal
+			char := edge.Label
+			f.AddEdge(from, to, char)
+		}
+	}
+
+	f.Nodes[0] = true
+}
+
+// hasState returns whether a state is present in the FiniteState or not
+func (f *FiniteState) hasState(state int) bool {
+	_, ok := f.Nodes[state]
+	return ok
+}
+
+// nextState returns the next unused state ID
+func (f *FiniteState) nextState() int {
+	next := 0
+	for state := range f.Nodes {
+		if state > next {
+			next = state
+		}
+	}
+	return next
+}
+
+// addState adds the given state if it doesn't exist
+func (f *FiniteState) addState(state int, terminal bool) {
+	if _, ok := f.Nodes[state]; !ok {
+		f.Nodes[state] = terminal
+	}
+}
+
+// allStates retrieves all the states in the FiniteState as a slice
+func (f *FiniteState) allStates() []int {
+	states := []int{}
+	for state := range f.Nodes {
+		states = append(states, state)
+	}
+	sort.Ints(states)
+	return states
+}
+
+// terminals retrieves all the terminal states in the FiniteState as a slice
+func (f *FiniteState) terminals() []int {
+	terminals := []int{}
+	for state, terminal := range f.Nodes {
+		if terminal {
+			terminals = append(terminals, state)
+		}
+	}
+	sort.Ints(terminals)
+	return terminals
+}
+
+// AddEdge adds a new Edge to the FiniteState if a matching Edge does not
+// already exist, adding new states if required.
+func (f *FiniteState) AddEdge(from, to int, char rune) {
+	f.addState(from, false)
+	f.addState(to, false)
+
+	edge := Edge{From: from, To: to, Label: char}
+
+	if _, exists := f.Edges[edge]; !exists {
+		f.Edges[edge] = new(interface{})
+	}
+}
+
+// edgesTo retrieves all the Edges going to a particular state
+func (f *FiniteState) edgesTo(to int) []Edge {
+	edges := []Edge{}
+	for edge := range f.Edges {
+		if edge.To == to {
+			edges = append(edges, edge)
+		}
+	}
+	return edges
+}
+
+// edgesFrom retrieves all the Edges coming from a particular state
+func (f *FiniteState) edgesFrom(from int) []Edge {
+	edges := []Edge{}
+	for edge := range f.Edges {
+		if edge.From == from {
+			edges = append(edges, edge)
+		}
+	}
+	return edges
+}
+
+// Copy the FiniteState, creating a new instance with identical values
+func (f *FiniteState) copy() *FiniteState {
+	return f.copyWithOffset(0)
+}
+
+// copyWithOffset copies the FiniteState applying the given offset to all states
+func (f *FiniteState) copyWithOffset(offset int) *FiniteState {
+	// Make an empty FiniteState as the start
+	copy := emptyFiniteState()
+
+	// Copy all the nodes
+	for state, terminal := range f.Nodes {
+		if state == 0 {
+			copy.Nodes[state] = terminal
+		} else {
+			copy.Nodes[state+offset] = terminal
+		}
+	}
+
+	// Copy all the edges
+	for edge := range f.Edges {
+		edgeCopy := edge.copyWithOffset(offset)
+		copy.Edges[edgeCopy] = new(interface{})
+	}
+
+	return copy
 }

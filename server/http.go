@@ -67,38 +67,7 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func transformAutomata(exe *automata.FiniteState) api.Automata {
-	a := api.Automata{CurrentNode: 0}
-
-	states := []int{}
-	edges := []api.Edge{}
-	for from, transition := range exe.Transitions {
-		if !contains(states, from) {
-			states = append(states, from)
-		}
-		for ch, to := range transition {
-			if !contains(states, to) {
-				states = append(states, to)
-			}
-
-			edge := api.Edge{From: from, To: to, Label: string(ch)}
-			edges = append(edges, edge)
-		}
-	}
-
-	nodes := []api.Node{}
-	for _, state := range states {
-		node := api.Node{ID: state, IsTerminal: contains(exe.TerminalStates, state)}
-		nodes = append(nodes, node)
-	}
-
-	a.Nodes = nodes
-	a.Edges = edges
-
-	return a
-}
-
-func transform(exe *automata.FSM) api.Automata {
+func transform(exe *automata.FiniteState) api.Automata {
 	a := api.Automata{CurrentNode: 0, Nodes: []api.Node{}, Edges: []api.Edge{}}
 
 	for id, terminal := range exe.Nodes {
@@ -112,14 +81,4 @@ func transform(exe *automata.FSM) api.Automata {
 	}
 
 	return a
-}
-
-func contains(array []int, value int) bool {
-	for _, present := range array {
-		if present == value {
-			return true
-		}
-	}
-
-	return false
 }
