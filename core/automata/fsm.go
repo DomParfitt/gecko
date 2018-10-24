@@ -51,6 +51,8 @@ func emptyFSM() *FSM {
 	}
 }
 
+// Execute the input string against the automata.
+// Returns true if the string matches, false otherwise.
 func (f *FSM) Execute(input string) bool {
 	f.currentNode = 0
 	for _, ch := range input {
@@ -107,19 +109,22 @@ func (f *FSM) Append(other *FSM) {
 // I.e. if given A = [0]-a->[1*], and B = [0]-b->[1*] then unioning
 // B to A (A.Union(B)) should result in A = [0]-(a,b)->[1*]
 func (f *FSM) Union(other *FSM) {
-	// offset := f.nextState()
-	// copy := other.copyWithOffset(offset)
+	offset := f.nextState()
+	copy := other.copyWithOffset(offset)
 
-	// for edge := range copy.Edges {
-	// 	from := edge.From
-	// 	to := edge.To
-	// 	char := edge.Label
+	for edge := range copy.Edges {
+		from := edge.From
+		to := edge.To
+		char := edge.Label
 
-	// 	if from-offset == 0 {
-	// 		from = 0
-	// 	}
+		if from-offset == 0 {
+			from = 0
+		}
 
-	// }
+		f.AddEdge(from, to, char)
+		f.Nodes[from] = copy.Nodes[edge.From]
+		f.Nodes[to] = copy.Nodes[edge.To]
+	}
 }
 
 // Loop sets the FSM to loop back on itself.
