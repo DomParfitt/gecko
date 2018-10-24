@@ -7,8 +7,8 @@ import (
 // FSM structure representing a Finite State Machine
 type FSM struct {
 	currentNode int
-	Nodes       map[int]bool //[]Node
-	Edges       []Edge
+	Nodes       map[int]bool         //[]Node
+	Edges       map[Edge]interface{} //[]Edge
 }
 
 // Edge structure representing a transition within an FSM
@@ -47,7 +47,7 @@ func emptyFSM() *FSM {
 	return &FSM{
 		currentNode: 0,
 		Nodes:       make(map[int]bool),
-		Edges:       []Edge{},
+		Edges:       make(map[Edge]interface{}), //[]Edge{},
 	}
 }
 
@@ -59,7 +59,7 @@ func (f *FSM) Append(other *FSM) {
 	copy := other.copyWithOffset(offset)
 	terminals := f.terminals()
 
-	for _, edge := range copy.Edges {
+	for edge := range copy.Edges {
 		from := edge.From
 		to := edge.To
 		char := edge.Label
@@ -87,7 +87,19 @@ func (f *FSM) Append(other *FSM) {
 // I.e. if given A = [0]-a->[1*], and B = [0]-b->[1*] then unioning
 // B to A (A.Union(B)) should result in A = [0]-(a,b)->[1*]
 func (f *FSM) Union(other *FSM) {
+	// offset := f.nextState()
+	// copy := other.copyWithOffset(offset)
 
+	// for edge := range copy.Edges {
+	// 	from := edge.From
+	// 	to := edge.To
+	// 	char := edge.Label
+
+	// 	if from-offset == 0 {
+	// 		from = 0
+	// 	}
+
+	// }
 }
 
 // Loop sets the FSM to loop back on itself.
@@ -155,20 +167,24 @@ func (f *FSM) terminals() []int {
 	return terminals
 }
 
-// addEdge adds a new Edge to the FSM, adding new states if required.
-// Does not check whether a matching Edge is already present.
+// addEdge adds a new Edge to the FSM if a matching Edge does not
+// already exist, adding new states if required.
 func (f *FSM) addEdge(from, to int, char rune) {
 	f.addState(from, false)
 	f.addState(to, false)
 
 	edge := Edge{From: from, To: to, Label: char}
-	f.Edges = append(f.Edges, edge)
+
+	if _, exists := f.Edges[edge]; !exists {
+		f.Edges[edge] = new(interface{})
+	}
+
 }
 
 // edgesTo retrieves all the Edges going to a particular state
 func (f *FSM) edgesTo(to int) []Edge {
 	edges := []Edge{}
-	for _, edge := range f.Edges {
+	for edge := range f.Edges {
 		if edge.To == to {
 			edges = append(edges, edge)
 		}
@@ -179,7 +195,7 @@ func (f *FSM) edgesTo(to int) []Edge {
 // edgesFrom retrieves all the Edges coming from a particular state
 func (f *FSM) edgesFrom(from int) []Edge {
 	edges := []Edge{}
-	for _, edge := range f.Edges {
+	for edge := range f.Edges {
 		if edge.From == from {
 			edges = append(edges, edge)
 		}
@@ -203,8 +219,9 @@ func (f *FSM) copyWithOffset(offset int) *FSM {
 	}
 
 	// Copy all the edges
-	for _, edge := range f.Edges {
-		copy.Edges = append(copy.Edges, edge.copyWithOffset(offset))
+	for edge := range f.Edges {
+		edgeCopy := edge.copyWithOffset(offset)
+		copy.Edges[edgeCopy] = new(interface{})
 	}
 
 	return copy
