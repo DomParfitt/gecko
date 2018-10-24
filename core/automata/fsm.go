@@ -26,9 +26,20 @@ func (e Edge) copy() Edge {
 // copyWithOffset makes a copy of the given Edge with the
 // From and To states offset by the given value
 func (e Edge) copyWithOffset(offset int) Edge {
+	from := e.From
+	to := e.To
+
+	if from != 0 {
+		from += offset
+	}
+
+	if to != 0 {
+		to += offset
+	}
+
 	return Edge{
-		From:  e.From + offset,
-		To:    e.To + offset,
+		From:  from,
+		To:    to,
 		Label: e.Label,
 	}
 }
@@ -89,12 +100,12 @@ func (f *FSM) Append(other *FSM) {
 		from := edge.From
 		to := edge.To
 		char := edge.Label
-		if from-offset == 0 {
+		if from == 0 {
 			for _, terminal := range terminals {
 				f.AddEdge(terminal, to, char)
 				f.Nodes[terminal] = false
 			}
-		} else if to-offset == 0 {
+		} else if to == 0 {
 			for _, terminal := range terminals {
 				f.AddEdge(from, terminal, char)
 				f.Nodes[terminal] = false
@@ -120,10 +131,6 @@ func (f *FSM) Union(other *FSM) {
 		from := edge.From
 		to := edge.To
 		char := edge.Label
-
-		if from-offset == 0 {
-			from = 0
-		}
 
 		f.AddEdge(from, to, char)
 		f.Nodes[from] = copy.Nodes[edge.From]
@@ -207,7 +214,6 @@ func (f *FSM) AddEdge(from, to int, char rune) {
 	if _, exists := f.Edges[edge]; !exists {
 		f.Edges[edge] = new(interface{})
 	}
-
 }
 
 // edgesTo retrieves all the Edges going to a particular state
@@ -244,7 +250,11 @@ func (f *FSM) copyWithOffset(offset int) *FSM {
 
 	// Copy all the nodes
 	for state, terminal := range f.Nodes {
-		copy.Nodes[state+offset] = terminal
+		if state == 0 {
+			copy.Nodes[state] = terminal
+		} else {
+			copy.Nodes[state+offset] = terminal
+		}
 	}
 
 	// Copy all the edges
