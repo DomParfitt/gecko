@@ -18,6 +18,8 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
         let dot = 'digraph {\n';
         dot += this.generateDotNodes(this.props.ast);
         dot += '}';
+        // tslint:disable-next-line:no-console
+        console.log(dot);
         return dot;
     }
 
@@ -27,11 +29,13 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
 
     private generateDotNodesHelper(ast: IAbstractSyntaxTree, count: number): {dot: string, count: number} {
         const rootName = count++;
-        let dot = rootName +  ' [label="' + ast.label + '"]\n';
+        let dot = rootName +  ' [label="' + ast.label + '"';
         if (ast.children.length === 0) {
+            dot +=  ' fillcolor="lightblue" style="filled"]\n';
             return {dot, count};
         } 
 
+        dot += ']\n';
         let newCount = count;
         for (const child of ast.children) {
             const childName = newCount;
