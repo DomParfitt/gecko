@@ -7,11 +7,6 @@ import (
 	"sort"
 )
 
-// Executer interface
-type Executer interface {
-	execute(input string) bool
-}
-
 // FiniteState struct
 type FiniteState struct {
 	nextState      int
