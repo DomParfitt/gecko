@@ -155,7 +155,7 @@ func (f *FSM) nextState() int {
 			next = state
 		}
 	}
-	return next + 1
+	return next
 }
 
 // addState adds the given state if it doesn't exist
