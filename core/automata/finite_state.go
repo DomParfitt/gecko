@@ -191,24 +191,29 @@ func (f *FiniteState) addState(state int, terminal bool) {
 
 // allStates retrieves all the states in the FiniteState as a slice
 func (f *FiniteState) allStates() []int {
-	states := []int{}
-	for state := range f.Nodes {
-		states = append(states, state)
-	}
-	sort.Ints(states)
-	return states
+	return f.matchingStates(func(state int, terminal bool) bool {
+		return true
+	})
 }
 
 // terminals retrieves all the terminal states in the FiniteState as a slice
 func (f *FiniteState) terminals() []int {
-	terminals := []int{}
+	return f.matchingStates(func(state int, terminal bool) bool {
+		return terminal
+	})
+}
+
+// matchingStates retrieves all states which match based on a given predicate.
+// I.e. returns all states where matcher(state, terminal) == true
+func (f *FiniteState) matchingStates(matcher func(state int, terminal bool) bool) []int {
+	states := []int{}
 	for state, terminal := range f.Nodes {
-		if terminal {
-			terminals = append(terminals, state)
+		if matcher(state, terminal) {
+			states = append(states, state)
 		}
 	}
-	sort.Ints(terminals)
-	return terminals
+	sort.Ints(states)
+	return states
 }
 
 // Copy the FiniteState, creating a new instance with identical values
