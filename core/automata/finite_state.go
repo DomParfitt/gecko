@@ -16,10 +16,10 @@ type FiniteState struct {
 // NewFiniteState initialises a new FiniteState with a two states and a transition between them using
 // the given character
 func NewFiniteState(char rune) *FiniteState {
-	FiniteState := emptyFiniteState()
-	FiniteState.AddEdge(0, 1, char)
-	FiniteState.Nodes[1] = true
-	return FiniteState
+	fsm := emptyFiniteState()
+	fsm.AddEdge(0, 1, char)
+	fsm.Nodes[1] = true
+	return fsm
 }
 
 // emptyFiniteState creates an empty FiniteState with no nodes or edges
