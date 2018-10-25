@@ -141,20 +141,24 @@ func (f *FiniteState) AddEdge(from, to int, char rune) {
 
 // edgesTo retrieves all the Edges going to a particular state
 func (f *FiniteState) edgesTo(to int) []Edge {
-	edges := []Edge{}
-	for edge := range f.Edges {
-		if edge.To == to {
-			edges = append(edges, edge)
-		}
-	}
-	return edges
+	return f.matchingEdges(func(edge Edge) bool {
+		return edge.To == to
+	})
 }
 
 // edgesFrom retrieves all the Edges coming from a particular state
 func (f *FiniteState) edgesFrom(from int) []Edge {
+	return f.matchingEdges(func(edge Edge) bool {
+		return edge.From == from
+	})
+}
+
+// matchingEdges retrieves all edges which are valid according to the given
+// function, matcher. I.e. returns all edges where matcher(edge) == true
+func (f *FiniteState) matchingEdges(matcher func(edge Edge) bool) []Edge {
 	edges := []Edge{}
 	for edge := range f.Edges {
-		if edge.From == from {
+		if matcher(edge) {
 			edges = append(edges, edge)
 		}
 	}
