@@ -126,6 +126,41 @@ func (f *FiniteState) Loop() {
 	f.Nodes[0] = true
 }
 
+// AddEdge adds a new Edge to the FiniteState if a matching Edge does not
+// already exist, adding new states if required.
+func (f *FiniteState) AddEdge(from, to int, char rune) {
+	f.addState(from, false)
+	f.addState(to, false)
+
+	edge := Edge{From: from, To: to, Label: char}
+
+	if _, exists := f.Edges[edge]; !exists {
+		f.Edges[edge] = new(interface{})
+	}
+}
+
+// edgesTo retrieves all the Edges going to a particular state
+func (f *FiniteState) edgesTo(to int) []Edge {
+	edges := []Edge{}
+	for edge := range f.Edges {
+		if edge.To == to {
+			edges = append(edges, edge)
+		}
+	}
+	return edges
+}
+
+// edgesFrom retrieves all the Edges coming from a particular state
+func (f *FiniteState) edgesFrom(from int) []Edge {
+	edges := []Edge{}
+	for edge := range f.Edges {
+		if edge.From == from {
+			edges = append(edges, edge)
+		}
+	}
+	return edges
+}
+
 // hasState returns whether a state is present in the FiniteState or not
 func (f *FiniteState) hasState(state int) bool {
 	_, ok := f.Nodes[state]
@@ -170,41 +205,6 @@ func (f *FiniteState) terminals() []int {
 	}
 	sort.Ints(terminals)
 	return terminals
-}
-
-// AddEdge adds a new Edge to the FiniteState if a matching Edge does not
-// already exist, adding new states if required.
-func (f *FiniteState) AddEdge(from, to int, char rune) {
-	f.addState(from, false)
-	f.addState(to, false)
-
-	edge := Edge{From: from, To: to, Label: char}
-
-	if _, exists := f.Edges[edge]; !exists {
-		f.Edges[edge] = new(interface{})
-	}
-}
-
-// edgesTo retrieves all the Edges going to a particular state
-func (f *FiniteState) edgesTo(to int) []Edge {
-	edges := []Edge{}
-	for edge := range f.Edges {
-		if edge.To == to {
-			edges = append(edges, edge)
-		}
-	}
-	return edges
-}
-
-// edgesFrom retrieves all the Edges coming from a particular state
-func (f *FiniteState) edgesFrom(from int) []Edge {
-	edges := []Edge{}
-	for edge := range f.Edges {
-		if edge.From == from {
-			edges = append(edges, edge)
-		}
-	}
-	return edges
 }
 
 // Copy the FiniteState, creating a new instance with identical values
