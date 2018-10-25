@@ -1,3 +1,5 @@
+// Package automata contains definitions and functionality relating to representation of
+// regular expresssions as executable automata
 package automata
 
 import (
@@ -7,8 +9,8 @@ import (
 // FiniteState structure representing a Finite State Machine
 type FiniteState struct {
 	currentNode int
-	Nodes       map[int]bool         //[]Node
-	Edges       map[Edge]interface{} //[]Edge
+	Nodes       map[int]bool
+	Edges       map[Edge]interface{}
 }
 
 // NewFiniteState initialises a new FiniteState with a two states and a transition between them using
@@ -25,7 +27,7 @@ func emptyFiniteState() *FiniteState {
 	return &FiniteState{
 		currentNode: 0,
 		Nodes:       make(map[int]bool),
-		Edges:       make(map[Edge]interface{}), //[]Edge{},
+		Edges:       make(map[Edge]interface{}),
 	}
 }
 
