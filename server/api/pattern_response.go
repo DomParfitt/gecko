@@ -1,3 +1,4 @@
+// Package api contains definitions for JSON structs that are sent over HTTP on the API
 package api
 
 // PatternResponse represents the Response JSON
