@@ -1,6 +1,6 @@
 import { graphviz } from 'd3-graphviz';
 import * as React from 'react';
-import { IAutomata } from 'src/automata/Automata';
+import {  getFlattenedEdges, IAutomata, sortEdges } from 'src/automata/Automata';
 
 class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
@@ -47,17 +47,25 @@ class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
             dot += '];\n';
         }
 
-        for(const edge of this.props.automata.edges) {
+        sortEdges(this.props.automata);
+        let edges = this.props.automata.edges;
+        if (this.props.flattenEdges) {
+            edges = getFlattenedEdges(this.props.automata);
+        }
+
+        for(const edge of edges) {
             dot += edge.from + '->' + edge.to + ' [label="' + edge.label + '"];\n';
         }
 
         dot += '}';
         return dot;
     }
+
 }
 
 export interface IAutomataGraphProps extends React.ClassAttributes<AutomataGraph> {
-    automata: IAutomata
+    automata: IAutomata,
+    flattenEdges?: boolean,
 }
 
 export default AutomataGraph;
