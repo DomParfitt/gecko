@@ -1,31 +1,13 @@
-import { graphviz } from 'd3-graphviz';
 import * as React from 'react';
 import {  getFlattenedEdges, IAutomata, sortEdges } from 'src/automata/Automata';
+import Graphviz from './Graphviz';
 
 class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
     public render(): JSX.Element {
         return(
-            <div id="automataGraphDiv" />
+            <Graphviz dot={this.generateDot()} />
         );
-    }
-
-    public componentDidMount() {
-        this.loadGraph();
-    }
-    
-    
-    public componentDidUpdate() {
-        this.loadGraph();
-    }
-
-    private loadGraph() {
-        graphviz('#automataGraphDiv')
-            .height(500)
-            .width(500)
-            .fit(true)
-            .zoom(false)
-            .renderDot(this.generateDot());
     }
 
     private generateDot(): string {

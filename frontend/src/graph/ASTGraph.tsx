@@ -1,6 +1,6 @@
-import { graphviz } from 'd3-graphviz';
 import * as React from 'react';
 import { IAbstractSyntaxTree } from 'src/ast/AbstractSyntaxTree';
+import Graphviz from './Graphviz';
 
 class ASTGraph extends React.Component<IASTGraphProps, any> {
 
@@ -10,29 +10,10 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
 
     public render(): JSX.Element {
         return(
-            <div id="astGraphDiv" />
+            <Graphviz dot={this.generateDot()}/>
         );
     }
 
-    public componentDidMount() {
-        this.loadGraph();
-    }
-    
-    
-    public componentDidUpdate() {
-        this.loadGraph();
-    }
-
-    private loadGraph() {
-        graphviz('#astGraphDiv')
-            // .graphviz({useWorker: false})
-            .height(500)
-            .width(500)
-            .fit(true)
-            .zoom(false)
-            .renderDot(this.generateDot());
-    }
-    
     private generateDot(): string {
         let dot = 'digraph {\n';
         dot += this.generateDotNodes(this.props.ast);
