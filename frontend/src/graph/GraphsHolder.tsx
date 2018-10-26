@@ -18,7 +18,7 @@ class GraphsHolder extends React.Component<IGraphsHolderProps, IGraphsHolderStat
     public render(): JSX.Element {
         return (
             <div>
-                {this.state.currentGraph}
+                {this.state.currentGraph()}
                 <Switcher graphs={this.switcherData()}/>
             </div>
         );
@@ -32,20 +32,20 @@ class GraphsHolder extends React.Component<IGraphsHolderProps, IGraphsHolderStat
     }
 
     private showAutomataGraph = () => {
-        this.setState({'currentGraph': this.renderAutomataGraph()});
+        this.setState({'currentGraph': this.renderAutomataGraph});
     }
 
     private showASTGraph = () => {
-        this.setState({'currentGraph': this.renderASTGraph()});
+        this.setState({'currentGraph': this.renderASTGraph});
     }
 
-    private renderAutomataGraph(): JSX.Element {
+    private renderAutomataGraph = (): JSX.Element => {
         return (
             <AutomataGraph automata={this.props.automata} />
         );
     }
 
-    private renderASTGraph(): JSX.Element {
+    private renderASTGraph = (): JSX.Element => {
         return (
             <ASTGraph ast={this.props.ast} />
         );
@@ -53,7 +53,7 @@ class GraphsHolder extends React.Component<IGraphsHolderProps, IGraphsHolderStat
 }
 
 export interface IGraphsHolderState extends React.ComponentState {
-    currentGraph?: JSX.Element
+    currentGraph: () => JSX.Element
 }
 
 export interface IGraphsHolderProps extends React.ClassAttributes<GraphsHolder> {
