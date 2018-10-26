@@ -19,16 +19,24 @@ export function getFlattenedEdges(automata: IAutomata): IEdge[] {
     const checkedEdges: IEdge[] = [];
 
     for (const edge of automata.edges) {
+
         if (checkedEdges.indexOf(edge) >= 0) {
             continue;
         }
-        const newEdge: IEdge = { from: edge.from, to: edge.to, label: edge.label };
+
+        const labels: string[] = []
+        labels.push(edge.label);
         for (const otherEdge of automata.edges) {
             if (edge.from === otherEdge.from && edge.to === otherEdge.to && edge.label !== otherEdge.label) {
                 checkedEdges.push(otherEdge);
-                newEdge.label += ", " + otherEdge.label;
+                labels.push(otherEdge.label);
             }
         }
+        let label = labels.toString();
+        if (labels.length > 5) {
+            label = labels[0] + ","+ labels[1] +"..." + labels[labels.length-1];
+        }
+        const newEdge: IEdge = { from: edge.from, to: edge.to, label };
         newEdges.push(newEdge);
     }
 
