@@ -35,8 +35,21 @@ class Graphviz extends React.Component<IGraphvizProps, any> {
 
     private loadGraph() {
         graphviz('#' + this.id)
-            .options(this.props.options || Graphviz.defaultOptions)
+            .options(this.options())
             .renderDot(this.props.dot);
+    }
+
+    private options(): GraphvizOptions {
+        if (!this.props.options) {
+            return Graphviz.defaultOptions
+        }
+
+        const options: GraphvizOptions = Graphviz.defaultOptions;
+        for(const option of Object.keys(this.props.options)) {
+            options[option] = this.props.options[option];
+        }
+
+        return options;
     }
 
 }
