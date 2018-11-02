@@ -3,7 +3,7 @@ import './App.css'
 import { IAbstractSyntaxTree } from './ast/AbstractSyntaxTree';
 import { IAutomata } from './automata/Automata';
 import { ASTGraph } from './graph/ASTGraph';
-import { AutomataGraph } from './graph/AutomataGraph';
+import { AutomataViewer } from './graph/AutomataViewer';
 import { TextInput } from './input/TextInput';
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -51,7 +51,6 @@ class App extends React.Component<IAppProps, IAppState> {
                     { id: 2, isTerminal: false },
                 ],
             },
-            flattenEdges: false,
             input: "",
             matches: false,
             pattern: "abc",
@@ -64,14 +63,10 @@ class App extends React.Component<IAppProps, IAppState> {
                 <h1>Welcome to Gecko!</h1>
                 <TextInput placeholder="Enter a pattern" onChangeHandler={this.handlePatternChange} onClickHandler={this.handlePatternClick} hideButton={true} />
                 <TextInput placeholder="Enter an input" onChangeHandler={this.handleInputChange} />
-                <label>
-                    Flatten Edges?
-                    <input type="checkbox" onChange={this.setFlattenEdges} />
-                </label>
                 <div>Pattern: {this.state.pattern}</div>
                 <div>Input: {this.state.input}</div>
                 <div>Matches: {this.state.matches.toString()}</div>
-                <AutomataGraph automata={this.state.automata} flattenEdges={this.state.flattenEdges} />
+                <AutomataViewer automata={this.state.automata} />
                 <ASTGraph ast={this.state.ast} />
                 {/* <GraphsHolder automata={this.state.automata} ast={this.state.ast} /> */}
             </div>
@@ -93,10 +88,6 @@ class App extends React.Component<IAppProps, IAppState> {
         const pattern = this.state.pattern;
         this.setState({ input });
         this.requestMatch(pattern, input);
-    }
-
-    private setFlattenEdges = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ flattenEdges: !this.state.flattenEdges });
     }
 
     private requestPattern(pattern: string) {
@@ -145,7 +136,6 @@ export interface IAppState extends React.ComponentState {
     matches: boolean,
     ast: IAbstractSyntaxTree,
     automata: IAutomata,
-    flattenEdges: boolean
 }
 
 export default App;
