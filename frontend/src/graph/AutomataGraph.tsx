@@ -22,7 +22,7 @@ export class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
                 dot += 'shape="circle" ';
             }
 
-            if (node.id === this.props.automata.currentNode) {
+            if (node.id === this.props.currentNode) {
                 dot += 'fillcolor="red" style="filled" ';
             }
 
@@ -47,5 +47,6 @@ export class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
 export interface IAutomataGraphProps extends React.ClassAttributes<AutomataGraph> {
     automata: IAutomata,
+    currentNode?: number,
     flattenEdges?: boolean,
 }
