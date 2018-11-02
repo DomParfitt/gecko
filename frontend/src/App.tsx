@@ -39,7 +39,6 @@ class App extends React.Component<IAppProps, IAppState> {
                 label: 'root',
             },
             automata: {
-                currentNode: 0,
                 edges: [
                     { from: 0, to: 1, label: 'a' },
                     { from: 1, to: 2, label: 'b' },
