@@ -80,7 +80,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
     private handlePatternChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const pattern = event.target.value;
-        this.setState({ 'pattern': pattern });
+        this.setState({ pattern });
         this.requestPattern(pattern);
     }
 
@@ -90,7 +90,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
     private handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
-        this.setState({ 'input': input });
+        this.setState({ input });
     }
 
     private setFlattenEdges = (event: React.ChangeEvent<HTMLInputElement>) => {
