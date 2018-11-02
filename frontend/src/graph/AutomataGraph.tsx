@@ -24,6 +24,8 @@ export class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
             if (node.id === this.props.currentNode) {
                 dot += 'fillcolor="red" style="filled" ';
+            } else if (node.id === this.props.previousNode) {
+                dot += 'fillcolor="blue" style="filled" ';
             }
 
             dot += '];\n';
@@ -36,7 +38,13 @@ export class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
         }
 
         for(const edge of edges) {
-            dot += edge.from + '->' + edge.to + ' [label="' + edge.label + '"];\n';
+            dot += edge.from + '->' + edge.to + ' [label="' + edge.label + '" '; 
+            
+            if (edge.from === this.props.previousNode && edge.to === this.props.currentNode) {
+                dot += 'color="green" ';
+            }
+
+            dot += '];\n';
         }
 
         dot += '}';
@@ -47,6 +55,8 @@ export class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
 export interface IAutomataGraphProps extends React.ClassAttributes<AutomataGraph> {
     automata: IAutomata,
+    consumed?: string,
     currentNode?: number,
     flattenEdges?: boolean,
+    previousNode?: number,
 }
