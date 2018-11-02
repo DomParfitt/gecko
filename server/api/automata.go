@@ -2,7 +2,6 @@ package api
 
 // Automata representation for JSON
 type Automata struct {
-	CurrentNode int    `json:"currentNode"`
 	Nodes       []Node `json:"nodes"`
 	Edges       []Edge `json:"edges"`
 }

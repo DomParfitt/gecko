@@ -68,7 +68,7 @@ func matchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func transformAutomata(exe *automata.FiniteState) api.Automata {
-	a := api.Automata{CurrentNode: 0}
+	a := api.Automata{}
 
 	states := []int{}
 	edges := []api.Edge{}
