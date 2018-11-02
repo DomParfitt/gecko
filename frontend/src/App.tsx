@@ -66,7 +66,7 @@ class App extends React.Component<IAppProps, IAppState> {
                 <TextInput placeholder="Enter an input" onChangeHandler={this.handleInputChange} />
                 <label>
                     Flatten Edges?
-                    <input type="checkbox" onChange={this.setFlattenEdges}/>
+                    <input type="checkbox" onChange={this.setFlattenEdges} />
                 </label>
                 <div>Pattern: {this.state.pattern}</div>
                 <div>Input: {this.state.input}</div>
@@ -90,7 +90,9 @@ class App extends React.Component<IAppProps, IAppState> {
 
     private handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
+        const pattern = this.state.pattern;
         this.setState({ input });
+        this.requestMatch(pattern, input);
     }
 
     private setFlattenEdges = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,6 +111,18 @@ class App extends React.Component<IAppProps, IAppState> {
                 (error) => {
                     this.log("Gecko Server Unavailable. " + error)
                 }
+            );
+    }
+
+    private requestMatch(pattern: string, input: string) {
+        fetch("http://localhost:8080/match/" + encodeURI(pattern) + "/" + encodeURI(input))
+            .then((resp) => resp.json())
+            .then(
+                (data) => {
+                    this.log(data);
+                    this.setState({matches: data.result});
+                },
+                (error) => {this.log("Gecko Server Unavailable. " + error)}
             );
     }
 
