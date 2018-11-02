@@ -4,10 +4,13 @@ import (
 	"github.com/DomParfitt/gecko/server/api"
 )
 
+// Transformer interface for types that can be transformed into the
+// API's AST representation
 type Transformer interface {
 	Transform() api.AST
 }
 
+// Transform a RegExpr into the API's AST representation
 func (r *RegExpr) Transform() api.AST {
 	children := []api.AST{}
 
@@ -25,6 +28,7 @@ func (r *RegExpr) Transform() api.AST {
 	}
 }
 
+// Transform a Union into the API's AST representation
 func (u *Union) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, u.simple.Transform())
@@ -37,6 +41,7 @@ func (u *Union) Transform() api.AST {
 	}
 }
 
+// Transform a SimpleExpr into the API's AST representation
 func (s *SimpleExpr) Transform() api.AST {
 	children := []api.AST{}
 	if s.concatenation != nil {
@@ -53,6 +58,7 @@ func (s *SimpleExpr) Transform() api.AST {
 	}
 }
 
+// Transform a Concatenation into the API's AST representation
 func (c *Concatenation) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, c.basic.Transform())
@@ -63,6 +69,7 @@ func (c *Concatenation) Transform() api.AST {
 	}
 }
 
+// Transform a BasicExpr into the API's AST representation
 func (b *BasicExpr) Transform() api.AST {
 	children := []api.AST{}
 
@@ -88,6 +95,7 @@ func (b *BasicExpr) Transform() api.AST {
 	}
 }
 
+// Transform a Star into the API's AST representation
 func (s *Star) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, s.element.Transform())
@@ -99,6 +107,7 @@ func (s *Star) Transform() api.AST {
 	}
 }
 
+// Transform a Plus into the API's AST representation
 func (p *Plus) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, p.element.Transform())
@@ -110,6 +119,7 @@ func (p *Plus) Transform() api.AST {
 	}
 }
 
+// Transform a Question into the API's AST representation
 func (q *Question) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, q.element.Transform())
@@ -121,6 +131,7 @@ func (q *Question) Transform() api.AST {
 	}
 }
 
+// Transform an Element into the API's AST representation
 func (e *Element) Transform() api.AST {
 	children := []api.AST{}
 
@@ -146,6 +157,7 @@ func (e *Element) Transform() api.AST {
 	}
 }
 
+// Transform a Group into the API's AST representation
 func (g *Group) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, api.AST{Label: "(", Children: []api.AST{}})
@@ -158,6 +170,7 @@ func (g *Group) Transform() api.AST {
 	}
 }
 
+// Transform an Escape into the API's AST representation
 func (e *Escape) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, api.AST{Label: "\\", Children: []api.AST{}})
@@ -168,6 +181,7 @@ func (e *Escape) Transform() api.AST {
 	}
 }
 
+// Transform a Set into the API's AST representation
 func (s *Set) Transform() api.AST {
 	children := []api.AST{}
 
@@ -185,6 +199,7 @@ func (s *Set) Transform() api.AST {
 	}
 }
 
+// Transform a PositiveSet into the API's AST representation
 func (p *PositiveSet) Transform() api.AST {
 	children := []api.AST{}
 
@@ -198,6 +213,7 @@ func (p *PositiveSet) Transform() api.AST {
 	}
 }
 
+// Transform a NegativeSet into the API's AST representation
 func (n *NegativeSet) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, api.AST{Label: "[", Children: []api.AST{}})
@@ -211,6 +227,7 @@ func (n *NegativeSet) Transform() api.AST {
 	}
 }
 
+// Transform a SetItems into the API's AST representation
 func (s *SetItems) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, s.item.Transform())
@@ -224,6 +241,7 @@ func (s *SetItems) Transform() api.AST {
 	}
 }
 
+// Transform a SetItem into the API's AST representation
 func (s *SetItem) Transform() api.AST {
 	children := []api.AST{}
 
@@ -241,6 +259,7 @@ func (s *SetItem) Transform() api.AST {
 	}
 }
 
+// Transform a Range into the API's AST representation
 func (r *Range) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, r.start.Transform())
@@ -253,6 +272,7 @@ func (r *Range) Transform() api.AST {
 	}
 }
 
+// Transform a Character into the API's AST representation
 func (c *Character) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, c.base.Transform())
@@ -262,6 +282,7 @@ func (c *Character) Transform() api.AST {
 	}
 }
 
+// Transform a Base into the API's AST representation
 func (b *Base) Transform() api.AST {
 	children := []api.AST{}
 	children = append(children, api.AST{Label: string(b.Value), Children: []api.AST{}})

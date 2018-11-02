@@ -1,3 +1,5 @@
+// Package automata contains definitions and functionality relating to representation of
+// regular expresssions as executable automata
 package automata
 
 import (
@@ -7,50 +9,17 @@ import (
 // FiniteState structure representing a Finite State Machine
 type FiniteState struct {
 	currentNode int
-	Nodes       map[int]bool         //[]Node
-	Edges       map[Edge]interface{} //[]Edge
-}
-
-// Edge structure representing a transition within an FiniteState
-type Edge struct {
-	From  int
-	To    int
-	Label rune
-}
-
-// Copy makes a copy of the given Edge
-func (e Edge) copy() Edge {
-	return e.copyWithOffset(0)
-}
-
-// copyWithOffset makes a copy of the given Edge with the
-// From and To states offset by the given value
-func (e Edge) copyWithOffset(offset int) Edge {
-	from := e.From
-	to := e.To
-
-	if from != 0 {
-		from += offset
-	}
-
-	if to != 0 {
-		to += offset
-	}
-
-	return Edge{
-		From:  from,
-		To:    to,
-		Label: e.Label,
-	}
+	Nodes       map[int]bool
+	Edges       map[Edge]interface{}
 }
 
 // NewFiniteState initialises a new FiniteState with a two states and a transition between them using
 // the given character
 func NewFiniteState(char rune) *FiniteState {
-	FiniteState := emptyFiniteState()
-	FiniteState.AddEdge(0, 1, char)
-	FiniteState.Nodes[1] = true
-	return FiniteState
+	fsm := emptyFiniteState()
+	fsm.AddEdge(0, 1, char)
+	fsm.Nodes[1] = true
+	return fsm
 }
 
 // emptyFiniteState creates an empty FiniteState with no nodes or edges
@@ -58,7 +27,7 @@ func emptyFiniteState() *FiniteState {
 	return &FiniteState{
 		currentNode: 0,
 		Nodes:       make(map[int]bool),
-		Edges:       make(map[Edge]interface{}), //[]Edge{},
+		Edges:       make(map[Edge]interface{}),
 	}
 }
 
@@ -157,6 +126,45 @@ func (f *FiniteState) Loop() {
 	f.Nodes[0] = true
 }
 
+// AddEdge adds a new Edge to the FiniteState if a matching Edge does not
+// already exist, adding new states if required.
+func (f *FiniteState) AddEdge(from, to int, char rune) {
+	f.addState(from, false)
+	f.addState(to, false)
+
+	edge := Edge{From: from, To: to, Label: char}
+
+	if _, exists := f.Edges[edge]; !exists {
+		f.Edges[edge] = new(interface{})
+	}
+}
+
+// edgesTo retrieves all the Edges going to a particular state
+func (f *FiniteState) edgesTo(to int) []Edge {
+	return f.matchingEdges(func(edge Edge) bool {
+		return edge.To == to
+	})
+}
+
+// edgesFrom retrieves all the Edges coming from a particular state
+func (f *FiniteState) edgesFrom(from int) []Edge {
+	return f.matchingEdges(func(edge Edge) bool {
+		return edge.From == from
+	})
+}
+
+// matchingEdges retrieves all edges which are valid according to the given
+// function, matcher. I.e. returns all edges where matcher(edge) == true
+func (f *FiniteState) matchingEdges(matcher func(edge Edge) bool) []Edge {
+	edges := []Edge{}
+	for edge := range f.Edges {
+		if matcher(edge) {
+			edges = append(edges, edge)
+		}
+	}
+	return edges
+}
+
 // hasState returns whether a state is present in the FiniteState or not
 func (f *FiniteState) hasState(state int) bool {
 	_, ok := f.Nodes[state]
@@ -183,59 +191,29 @@ func (f *FiniteState) addState(state int, terminal bool) {
 
 // allStates retrieves all the states in the FiniteState as a slice
 func (f *FiniteState) allStates() []int {
-	states := []int{}
-	for state := range f.Nodes {
-		states = append(states, state)
-	}
-	sort.Ints(states)
-	return states
+	return f.matchingStates(func(state int, terminal bool) bool {
+		return true
+	})
 }
 
 // terminals retrieves all the terminal states in the FiniteState as a slice
 func (f *FiniteState) terminals() []int {
-	terminals := []int{}
+	return f.matchingStates(func(state int, terminal bool) bool {
+		return terminal
+	})
+}
+
+// matchingStates retrieves all states which match based on a given predicate.
+// I.e. returns all states where matcher(state, terminal) == true
+func (f *FiniteState) matchingStates(matcher func(state int, terminal bool) bool) []int {
+	states := []int{}
 	for state, terminal := range f.Nodes {
-		if terminal {
-			terminals = append(terminals, state)
+		if matcher(state, terminal) {
+			states = append(states, state)
 		}
 	}
-	sort.Ints(terminals)
-	return terminals
-}
-
-// AddEdge adds a new Edge to the FiniteState if a matching Edge does not
-// already exist, adding new states if required.
-func (f *FiniteState) AddEdge(from, to int, char rune) {
-	f.addState(from, false)
-	f.addState(to, false)
-
-	edge := Edge{From: from, To: to, Label: char}
-
-	if _, exists := f.Edges[edge]; !exists {
-		f.Edges[edge] = new(interface{})
-	}
-}
-
-// edgesTo retrieves all the Edges going to a particular state
-func (f *FiniteState) edgesTo(to int) []Edge {
-	edges := []Edge{}
-	for edge := range f.Edges {
-		if edge.To == to {
-			edges = append(edges, edge)
-		}
-	}
-	return edges
-}
-
-// edgesFrom retrieves all the Edges coming from a particular state
-func (f *FiniteState) edgesFrom(from int) []Edge {
-	edges := []Edge{}
-	for edge := range f.Edges {
-		if edge.From == from {
-			edges = append(edges, edge)
-		}
-	}
-	return edges
+	sort.Ints(states)
+	return states
 }
 
 // Copy the FiniteState, creating a new instance with identical values
