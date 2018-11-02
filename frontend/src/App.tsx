@@ -8,7 +8,7 @@ import { TextInput } from './input/TextInput';
 
 class App extends React.Component<IAppProps, IAppState> {
 
-    constructor(props: any) {
+    constructor(props: IAppProps) {
         super(props);
 
         this.state = {
