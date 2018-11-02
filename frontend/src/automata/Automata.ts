@@ -1,4 +1,3 @@
-import { IAutomata, IEdge } from './Automata';
 // Interface for Automata objects used by the frontend
 export interface IAutomata {
     currentNode: number,

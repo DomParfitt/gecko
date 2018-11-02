@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-class Switcher extends React.Component<ISwitcherProps, any> {
+export class Switcher extends React.Component<ISwitcherProps, any> {
 
     constructor(props: any) {
         super(props);
@@ -25,6 +25,3 @@ export interface ISwitcherData {
     name: string;
     selector: () => void;
 }
-
-
-export default Switcher;

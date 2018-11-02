@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-class TextInput extends React.Component<ITextInputProps, any> {
+export class TextInput extends React.Component<ITextInputProps, any> {
 
     constructor(props: ITextInputProps) {
         super(props);
@@ -35,5 +35,3 @@ export interface ITextInputProps extends React.ClassAttributes<TextInput> {
     onChangeHandler?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onClickHandler?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
-
-export default TextInput;

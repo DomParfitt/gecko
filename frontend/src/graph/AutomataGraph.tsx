@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {  getFlattenedEdges, IAutomata, sortEdges } from 'src/automata/Automata';
-import Graphviz from './Graphviz';
+import { Graphviz } from './Graphviz';
 
-class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
+export class AutomataGraph extends React.Component<IAutomataGraphProps, any> {
 
     public render(): JSX.Element {
         return(
@@ -49,5 +49,3 @@ export interface IAutomataGraphProps extends React.ClassAttributes<AutomataGraph
     automata: IAutomata,
     flattenEdges?: boolean,
 }
-
-export default AutomataGraph;

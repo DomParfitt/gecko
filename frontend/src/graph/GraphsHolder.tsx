@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { IAbstractSyntaxTree } from 'src/ast/AbstractSyntaxTree';
 import { IAutomata } from 'src/automata/Automata';
-import ASTGraph from './ASTGraph';
-import AutomataGraph from './AutomataGraph';
-import Switcher, { ISwitcherData } from './Switcher';
+import { ASTGraph } from './ASTGraph';
+import { AutomataGraph } from './AutomataGraph';
+import { ISwitcherData, Switcher } from './Switcher';
 
-class GraphsHolder extends React.Component<IGraphsHolderProps, IGraphsHolderState> {
+export class GraphsHolder extends React.Component<IGraphsHolderProps, IGraphsHolderState> {
 
     constructor(props: IGraphsHolderProps) {
         super(props);
@@ -41,7 +41,7 @@ class GraphsHolder extends React.Component<IGraphsHolderProps, IGraphsHolderStat
 
     private renderAutomataGraph = (): JSX.Element => {
         return (
-            <AutomataGraph automata={this.props.automata} />
+            <AutomataGraph automata={this.props.automata}/>
         );
     }
 
@@ -60,5 +60,3 @@ export interface IGraphsHolderProps extends React.ClassAttributes<GraphsHolder> 
     automata: IAutomata
     ast: IAbstractSyntaxTree
 }
-
-export default GraphsHolder;

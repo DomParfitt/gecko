@@ -2,9 +2,9 @@ import * as React from 'react';
 import './App.css'
 import { IAbstractSyntaxTree } from './ast/AbstractSyntaxTree';
 import { getFlattenedEdges, IAutomata } from './automata/Automata';
-import ASTGraph from './graph/ASTGraph';
-import AutomataGraph from './graph/AutomataGraph';
-import TextInput from './input/TextInput';
+import { ASTGraph } from './graph/ASTGraph';
+import { AutomataGraph } from './graph/AutomataGraph';
+import { TextInput } from './input/TextInput';
 
 class App extends React.Component<IAppProps, IAppState> {
 

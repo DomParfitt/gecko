@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { IAbstractSyntaxTree } from 'src/ast/AbstractSyntaxTree';
-import Graphviz from './Graphviz';
+import { Graphviz } from './Graphviz';
 
-class ASTGraph extends React.Component<IASTGraphProps, any> {
+export class ASTGraph extends React.Component<IASTGraphProps, any> {
 
     constructor(props: IASTGraphProps) {
         super(props);
@@ -50,5 +50,3 @@ class ASTGraph extends React.Component<IASTGraphProps, any> {
 export interface IASTGraphProps extends React.ClassAttributes<ASTGraph> {
     ast: IAbstractSyntaxTree
 }
-
-export default ASTGraph;
