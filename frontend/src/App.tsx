@@ -65,7 +65,7 @@ class App extends React.Component<IAppProps, IAppState> {
                 <div>Pattern: {this.state.pattern}</div>
                 <div>Input: {this.state.input}</div>
                 <div>Matches: {this.state.matches.toString()}</div>
-                <AutomataViewer automata={this.state.automata} steps={[0,1,2,1,2,1]}/>
+                <AutomataViewer automata={this.state.automata} input={'abc'}/>
                 <ASTGraph ast={this.state.ast} />
                 {/* <GraphsHolder automata={this.state.automata} ast={this.state.ast} /> */}
             </div>
