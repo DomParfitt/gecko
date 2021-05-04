@@ -11,7 +11,7 @@
     "d3-selection": "^1.3.2",
     "d3-transition": "^1.1.3",
     "d3-zoom": "^1.7.3",
-    "merge": ">=1.2.1",
+    "merge": ">=2.1.1",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-scripts-ts": "^4.0.8"
